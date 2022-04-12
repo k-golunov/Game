@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace GameUlearn
 {
@@ -8,6 +9,8 @@ namespace GameUlearn
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Vector2 _mousePos;
+        private Player player;
 
         public Game1()
         {
@@ -18,24 +21,37 @@ namespace GameUlearn
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
+            player = new Player();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            player.Image = Content.Load<Texture2D>("soldier1_gun");
         }
 
         protected override void Update(GameTime gameTime)
         {
+            KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouse = Mouse.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            _mousePos = new Vector2(mouse.X, mouse.Y);
+            var direction = _mousePos - player.Position;
+            direction.Normalize();
+            player.Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
+
+            // логика перемещения персонажа (игрока)
+            if (keyboardState.IsKeyDown(Keys.A))
+                player.Left();
+            if (keyboardState.IsKeyDown(Keys.D))
+                player.Right();
+            if (keyboardState.IsKeyDown(Keys.W))
+                player.Up();
+            if (keyboardState.IsKeyDown(Keys.S))
+                player.Down();
 
             base.Update(gameTime);
         }
@@ -43,8 +59,9 @@ namespace GameUlearn
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            player.Draw(_spriteBatch);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
