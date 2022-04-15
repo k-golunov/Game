@@ -11,17 +11,36 @@ namespace GameUlearn
         private SpriteBatch _spriteBatch;
         private Vector2 _mousePos;
         private Player player;
+        private Bullet _bullet;
+        private Shoot _shoot;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            _graphics.PreferredBackBufferWidth = 1980;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            _graphics.PreferredBackBufferHeight = 1080;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            //_graphics.ToggleFullScreen();
+            //Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged); 
+            Window.AllowUserResizing = true;
             IsMouseVisible = true;
         }
+
+/*        void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            //this.Window.ClientBounds
+            var backgroundScale = new Vector2(
+                (float)this.Window.ClientBounds.Width / (float)_graphics.PreferredBackBufferWidth,
+                (float)this.Window.ClientBounds.Height / (float)_graphics.PreferredBackBufferHeight);
+            //graphics.PreferredBackBufferWidth = 320;
+            //graphics.PreferredBackBufferHeight = 240;
+        }*/
 
         protected override void Initialize()
         {
             player = new Player();
+            _bullet = new Bullet(player.Position);
+            _shoot = new Shoot();
             base.Initialize();
         }
 
@@ -29,6 +48,7 @@ namespace GameUlearn
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             player.Image = Content.Load<Texture2D>("soldier1_gun");
+            _bullet.Image = Content.Load<Texture2D>("weapon_gun");
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,6 +72,7 @@ namespace GameUlearn
                 player.Up();
             if (keyboardState.IsKeyDown(Keys.S))
                 player.Down();
+            if (keyboardState.IsKeyDown(Keys.LeftControl)) _shoot.Shooting();
 
             base.Update(gameTime);
         }
