@@ -18,7 +18,6 @@ namespace GameUlearn
     class Player : Entity
     {
         readonly float speed = 1f;
-        //static List<Bullet> bullets = new List<Bullet>();
 
         public Player() { }
         public Player(Texture2D image, Vector2 position)
@@ -26,8 +25,6 @@ namespace GameUlearn
             Image = image;
             Position = position;
         }
-
-        public Vector2 GetPositionForFire() => new Vector2(Position.X + 30, Position.Y + 30);
 
         public void Up()
         {
@@ -62,7 +59,7 @@ namespace GameUlearn
 
     }
 
-    class Bullet
+ /*   class Bullet
     {
         public Vector2 Position;
         public Vector2 Direction;
@@ -123,6 +120,6 @@ namespace GameUlearn
             foreach (Bullet bullet in bullets)
                 bullet.Draw(spriteBatch);
         }
-    }
+    }*/
 
 }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace GameUlearn
 {
@@ -10,9 +11,9 @@ namespace GameUlearn
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Vector2 _mousePos;
-        private Player player;
-        private Bullet _bullet;
-        private Shoot _shoot;
+        private static Player player;
+        private Texture2D BulletImg;
+        List<Bullet> bullets = new List<Bullet>();
 
         public Game1()
         {
@@ -21,26 +22,13 @@ namespace GameUlearn
             _graphics.PreferredBackBufferWidth = 1980;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             _graphics.PreferredBackBufferHeight = 1080;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             //_graphics.ToggleFullScreen();
-            //Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged); 
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
         }
 
-/*        void Window_ClientSizeChanged(object sender, EventArgs e)
-        {
-            //this.Window.ClientBounds
-            var backgroundScale = new Vector2(
-                (float)this.Window.ClientBounds.Width / (float)_graphics.PreferredBackBufferWidth,
-                (float)this.Window.ClientBounds.Height / (float)_graphics.PreferredBackBufferHeight);
-            //graphics.PreferredBackBufferWidth = 320;
-            //graphics.PreferredBackBufferHeight = 240;
-        }*/
-
         protected override void Initialize()
         {
             player = new Player();
-            _bullet = new Bullet(player.Position);
-            _shoot = new Shoot();
             base.Initialize();
         }
 
@@ -48,7 +36,7 @@ namespace GameUlearn
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             player.Image = Content.Load<Texture2D>("soldier1_gun");
-            _bullet.Image = Content.Load<Texture2D>("weapon_gun");
+            BulletImg = Content.Load<Texture2D>("weapon_gun");
         }
 
         protected override void Update(GameTime gameTime)
@@ -72,7 +60,8 @@ namespace GameUlearn
                 player.Up();
             if (keyboardState.IsKeyDown(Keys.S))
                 player.Down();
-            if (keyboardState.IsKeyDown(Keys.LeftControl)) _shoot.Shooting();
+            if (keyboardState.IsKeyDown(Keys.LeftControl)) bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position)); //bullets.Add(new Bullet(player.GetPositionForFire()));
+
 
             base.Update(gameTime);
         }
@@ -82,6 +71,9 @@ namespace GameUlearn
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
             player.Draw(_spriteBatch);
+            foreach (var bullet in bullets)
+                bullet.Draw(_spriteBatch);
+            
             _spriteBatch.End();
 
             base.Draw(gameTime);
