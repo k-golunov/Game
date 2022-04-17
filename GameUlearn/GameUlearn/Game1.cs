@@ -60,7 +60,7 @@ namespace GameUlearn
                 player.Up();
             if (keyboardState.IsKeyDown(Keys.S))
                 player.Down();
-            if (keyboardState.IsKeyDown(Keys.LeftControl)) bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position)); //bullets.Add(new Bullet(player.GetPositionForFire()));
+            if (keyboardState.IsKeyDown(Keys.LeftControl)) bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
 
             base.Update(gameTime);
