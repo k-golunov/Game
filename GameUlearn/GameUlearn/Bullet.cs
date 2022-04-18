@@ -12,7 +12,7 @@ namespace GameUlearn
         private Texture2D Image;
         private float Direction;
         private Vector2 Position;
-        private float _speed = 2f;
+        private float _speed = 20f;
 
         public Bullet(Texture2D image, float direction, Vector2 position)
         {

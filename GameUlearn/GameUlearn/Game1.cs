@@ -14,14 +14,19 @@ namespace GameUlearn
         private static Player player;
         private Texture2D BulletImg;
         List<Bullet> bullets = new List<Bullet>();
+        private Texture2D _grass;
+        private Texture2D[] _textures = new Texture2D[10];
+        private Map map = new Map();
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            _graphics.IsFullScreen = false;
             _graphics.PreferredBackBufferWidth = 1980;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
             _graphics.PreferredBackBufferHeight = 1080;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             //_graphics.ToggleFullScreen();
+            
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
         }
@@ -33,14 +38,17 @@ namespace GameUlearn
         }
 
         protected override void LoadContent()
-        {
+        { 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             player.Image = Content.Load<Texture2D>("soldier1_gun");
             BulletImg = Content.Load<Texture2D>("weapon_gun");
+            map.Image[4] = Content.Load<Texture2D>("glass_vertical");
+            map.Image[0] = Content.Load<Texture2D>("grass");
         }
 
         protected override void Update(GameTime gameTime)
         {
+            _graphics.ApplyChanges();
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouse = Mouse.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -60,20 +68,21 @@ namespace GameUlearn
                 player.Up();
             if (keyboardState.IsKeyDown(Keys.S))
                 player.Down();
-            if (keyboardState.IsKeyDown(Keys.LeftControl)) bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
+            if (mouse.LeftButton == ButtonState.Pressed) bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
-
+            map.GenerateMap();
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.LightGreen);
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
             player.Draw(_spriteBatch);
             foreach (var bullet in bullets)
                 bullet.Draw(_spriteBatch);
-            
+            foreach (var box in map.boxs)
+                box.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
