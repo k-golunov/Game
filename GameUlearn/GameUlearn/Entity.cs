@@ -12,6 +12,7 @@ namespace GameUlearn
         public Texture2D Image;
         public Vector2 Position;
         public float Rotation;
+        public Rectangle Rectangle;
         public int Healthy = 100;
     }
 
@@ -33,7 +34,7 @@ namespace GameUlearn
 
         public void Down()
         {
-            if (Position.Y < 1030) Position.Y += speed; // 450 поменять на высоту окна
+            if (Position.Y < 1030) Position.Y += speed;
         }
 
         public void Left()
@@ -43,7 +44,7 @@ namespace GameUlearn
 
         public void Right()
         {
-            if (Position.X < 1900) Position.X += /*direction.X **/ speed; // заменить 800 на ширину окна
+            if (Position.X < 1900) Position.X += speed;
         }
 
         public void Draw(SpriteBatch spriteBatch)

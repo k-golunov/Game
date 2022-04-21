@@ -15,7 +15,7 @@ namespace GameUlearn
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-            { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0 },
+            { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,4 },
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0 },
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
@@ -31,8 +31,8 @@ namespace GameUlearn
 
         public void GenerateMap()
         {
-            var x = 40;
-            var y = 20;
+            var x = 0;
+            var y = 0;
             
 
             for (var i = 0; i < map.GetLength(0); i++)
@@ -43,22 +43,11 @@ namespace GameUlearn
                     boxs.Add(new Box(Image[map[i,j]], rect, map[i, j]));
                     x += 64;
 			    }
+                x = 0;
                 y += 64;
             }
         }
     }
-
-/*    class Glass
-    {
-        public readonly bool Solid = true;
-        public Texture2D Image;
-        public int NumberTexture = 4;
-    }
-
-    class Wall : Glass
-    {
-        public new int NumberTexture = 3;    
-    }*/
 
     class Box
     {
@@ -76,6 +65,11 @@ namespace GameUlearn
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Image, Rectangle, Color.White);
+        }
+
+        public Rectangle GetRectangle()
+        {
+            return Rectangle;
         }
     }
 

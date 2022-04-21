@@ -14,9 +14,9 @@ namespace GameUlearn
         private static Player player;
         private Texture2D BulletImg;
         List<Bullet> bullets = new List<Bullet>();
-        private Texture2D _grass;
-        private Texture2D[] _textures = new Texture2D[10];
         private Map map = new Map();
+        MouseState previousMouse;
+        Zombie[] zombies;
 
         public Game1()
         {
@@ -44,6 +44,7 @@ namespace GameUlearn
             BulletImg = Content.Load<Texture2D>("weapon_gun");
             map.Image[4] = Content.Load<Texture2D>("glass_vertical");
             map.Image[0] = Content.Load<Texture2D>("grass");
+            map.GenerateMap();
         }
 
         protected override void Update(GameTime gameTime)
@@ -68,9 +69,15 @@ namespace GameUlearn
                 player.Up();
             if (keyboardState.IsKeyDown(Keys.S))
                 player.Down();
-            if (mouse.LeftButton == ButtonState.Pressed) bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
+            if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed) 
+                bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
-            map.GenerateMap();
+            for (var i = bullets.Count - 1; i >= 0; i--)
+                if (bullets[i].IsNeedToDelete(map.boxs))
+                    bullets.RemoveAt(i);
+            
+
+            previousMouse = mouse;
             base.Update(gameTime);
         }
 
