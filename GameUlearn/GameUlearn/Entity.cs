@@ -12,47 +12,81 @@ namespace GameUlearn
         public Texture2D Image;
         public Vector2 Position;
         public float Rotation;
-        public Rectangle Rectangle;
+        //public Rectangle Rectangle;
         public int Healthy = 100;
+        public SpriteFont HealthbarFont;
     }
 
     class Player : Entity
     {
         readonly float speed = 1f;
+        
 
         public Player() { }
-        public Player(Texture2D image, Vector2 position)
+        public Player(Vector2 position)
         {
-            Image = image;
             Position = position;
         }
 
-        public void Up()
+        public void Up(List<Box> boxes)
         {
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y - 2 * speed), Image.Width, Image.Height))) return;
             if (Position.Y > 20) Position.Y -= speed;
         }
 
-        public void Down()
+        public void Down(List<Box> boxes)
         {
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y + 2 * speed), Image.Width, Image.Height))) return;
             if (Position.Y < 1030) Position.Y += speed;
         }
 
-        public void Left()
+        public void Left(List<Box> boxes)
         {
+            if (Intersected(boxes, new Rectangle((int)(Position.X - 2* speed), (int)(Position.Y), Image.Width, Image.Height))) return;
             if (Position.X > 20) Position.X -= speed;
         }
 
-        public void Right()
+        public void Right(List<Box> boxes)
         {
+            if (Intersected(boxes, new Rectangle((int)(Position.X + 2 * speed), (int)(Position.Y), Image.Width, Image.Height))) return;
             if (Position.X < 1900) Position.X += speed;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Image, Position, null, Color.White,
-                Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f); 
+                Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f);
+            spriteBatch.DrawString(HealthbarFont, $"Health: {Healthy} / 100", new Vector2(10, 950), Color.Pink);
         }
 
+        private bool Intersected(List<Box> boxes, Rectangle rectangle)
+        {
+            foreach (var box in boxes)
+            {
+                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
+                    return true;
+            }
+            return false;
+        }
+
+        public void ChagneRotation()
+        {
+            MouseState mouse = Mouse.GetState();
+            var _mousePos = new Vector2(mouse.X, mouse.Y);
+            var direction = _mousePos - Position;
+            direction.Normalize();
+            Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
+        }
+
+        private void HealthBar()
+        {
+
+        }
+
+        private void Damage()
+        {
+
+        }
     }
 
     class Zombie : Entity

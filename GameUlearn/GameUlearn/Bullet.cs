@@ -38,7 +38,7 @@ namespace GameUlearn
             return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes);
         }
 
-        private bool Intersected(List<Box> boxs)
+        private bool Intersected(List<Box> boxes)
         {
 /*            foreach (var zombie in zombies)
             {
@@ -46,7 +46,7 @@ namespace GameUlearn
                     return true;
             }*/
 
-            foreach (var box in boxs)
+            foreach (var box in boxes)
             {
                 if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
                     return true;

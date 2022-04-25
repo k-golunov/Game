@@ -10,7 +10,6 @@ namespace GameUlearn
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Vector2 _mousePos;
         private static Player player;
         private Texture2D BulletImg;
         List<Bullet> bullets = new List<Bullet>();
@@ -44,6 +43,7 @@ namespace GameUlearn
             BulletImg = Content.Load<Texture2D>("weapon_gun");
             map.Image[4] = Content.Load<Texture2D>("glass_vertical");
             map.Image[0] = Content.Load<Texture2D>("grass");
+            player.HealthbarFont = Content.Load<SpriteFont>("Arial");
             map.GenerateMap();
         }
 
@@ -55,25 +55,20 @@ namespace GameUlearn
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _mousePos = new Vector2(mouse.X, mouse.Y);
-            var direction = _mousePos - player.Position;
-            direction.Normalize();
-            player.Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
-
-            // логика перемещения персонажа (игрока)
             if (keyboardState.IsKeyDown(Keys.A))
-                player.Left();
+                player.Left(map.boxes);
             if (keyboardState.IsKeyDown(Keys.D))
-                player.Right();
+                player.Right(map.boxes);
             if (keyboardState.IsKeyDown(Keys.W))
-                player.Up();
+                player.Up(map.boxes);
             if (keyboardState.IsKeyDown(Keys.S))
-                player.Down();
+                player.Down(map.boxes);
             if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed) 
                 bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
+            player.ChagneRotation();
             for (var i = bullets.Count - 1; i >= 0; i--)
-                if (bullets[i].IsNeedToDelete(map.boxs))
+                if (bullets[i].IsNeedToDelete(map.boxes))
                     bullets.RemoveAt(i);
             
 
@@ -88,7 +83,7 @@ namespace GameUlearn
             player.Draw(_spriteBatch);
             foreach (var bullet in bullets)
                 bullet.Draw(_spriteBatch);
-            foreach (var box in map.boxs)
+            foreach (var box in map.boxes)
                 box.Draw(_spriteBatch);
             _spriteBatch.End();
 

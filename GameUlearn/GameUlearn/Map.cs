@@ -9,7 +9,7 @@ namespace GameUlearn
     class Map
     {
         public Texture2D[] Image = new Texture2D[10];
-        public List<Box> boxs = new List<Box>();
+        public List<Box> boxes = new List<Box>();
         int[,] map = {
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
             { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
@@ -32,7 +32,7 @@ namespace GameUlearn
         public void GenerateMap()
         {
             var x = 0;
-            var y = 0;
+            var y = 15;
             
 
             for (var i = 0; i < map.GetLength(0); i++)
@@ -40,7 +40,7 @@ namespace GameUlearn
                 for (var j = 0; j < map.GetLength(1); j++)
 			    {
                     var rect = new Rectangle(x, y, 64, 64);
-                    boxs.Add(new Box(Image[map[i,j]], rect, map[i, j]));
+                    boxes.Add(new Box(Image[map[i,j]], rect, map[i, j]));
                     x += 64;
 			    }
                 x = 0;
@@ -51,8 +51,8 @@ namespace GameUlearn
 
     class Box
     {
-        Texture2D Image;
-        Rectangle Rectangle;
+        readonly Texture2D Image;
+        readonly Rectangle Rectangle;
         public int NumberTexture;
 
         public Box(Texture2D image, Rectangle rect, int numberTexture)
@@ -67,10 +67,7 @@ namespace GameUlearn
             spriteBatch.Draw(Image, Rectangle, Color.White);
         }
 
-        public Rectangle GetRectangle()
-        {
-            return Rectangle;
-        }
+        public Rectangle GetRectangle() => Rectangle;
     }
 
 }
