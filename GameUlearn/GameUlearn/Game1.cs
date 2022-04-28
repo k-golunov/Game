@@ -12,10 +12,11 @@ namespace GameUlearn
         private SpriteBatch _spriteBatch;
         private static Player player;
         private Texture2D BulletImg;
+        Texture2D simpleZombieImg;
         List<Bullet> bullets = new List<Bullet>();
         private Map map = new Map();
         MouseState previousMouse;
-        Zombie[] zombies;
+        List<Zombie> zombies = new List<Zombie>();
 
         public Game1()
         {
@@ -44,6 +45,7 @@ namespace GameUlearn
             map.Image[4] = Content.Load<Texture2D>("glass_vertical");
             map.Image[0] = Content.Load<Texture2D>("grass");
             player.HealthbarFont = Content.Load<SpriteFont>("Arial");
+            simpleZombieImg = Content.Load<Texture2D>("zoimbie1_hold");
             map.GenerateMap();
         }
 
@@ -51,6 +53,7 @@ namespace GameUlearn
         {
             _graphics.ApplyChanges();
             KeyboardState keyboardState = Keyboard.GetState();
+            var totalTime = gameTime.TotalGameTime.TotalMilliseconds;
             MouseState mouse = Mouse.GetState();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -63,8 +66,12 @@ namespace GameUlearn
                 player.Up(map.boxes);
             if (keyboardState.IsKeyDown(Keys.S))
                 player.Down(map.boxes);
-            if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed) 
+            if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed)
                 bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
+
+            if (totalTime % 10000 == 0 /*&& totalTime > 1*/)
+                zombies.Add(new Zombie(simpleZombieImg));
+            
 
             player.ChagneRotation();
             for (var i = bullets.Count - 1; i >= 0; i--)
@@ -84,8 +91,11 @@ namespace GameUlearn
             foreach (var bullet in bullets)
                 bullet.Draw(_spriteBatch);
             foreach (var box in map.boxes)
-                box.Draw(_spriteBatch);
+                box.Draw(_spriteBatch);            
+            foreach (var zombie in zombies)
+                zombie.Draw(_spriteBatch);
             _spriteBatch.End();
+
 
             base.Draw(gameTime);
         }

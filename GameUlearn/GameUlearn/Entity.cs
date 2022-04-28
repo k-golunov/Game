@@ -59,7 +59,7 @@ namespace GameUlearn
             spriteBatch.DrawString(HealthbarFont, $"Health: {Healthy} / 100", new Vector2(10, 950), Color.Pink);
         }
 
-        private bool Intersected(List<Box> boxes, Rectangle rectangle)
+        private bool Intersected(List<Box> boxes, Rectangle rectangle) // try create field rectangle for player or/and entity
         {
             foreach (var box in boxes)
             {
@@ -91,6 +91,42 @@ namespace GameUlearn
 
     class Zombie : Entity
     {
+        private readonly float speed = 0.5f;
+
+        public Zombie(Texture2D image)
+        {
+            Image = image;
+            SetRandomPosition();
+            Rotation = 1f;
+        }
+
+        public void Move(Vector2 playerPosition)
+        {
+
+        }
+
+        private void FindWayToPlayer(Vector2 playerPosition)
+        {
+
+        }
+
+        public void SetRandomPosition()
+        {
+            var rand = new Random();
+            Position.X = (float)rand.Next(0, 1980);
+            Position.Y = (float)rand.Next(0, 1080);
+        }
+
+        public bool Intersected()
+        {
+            return false;
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(Image, Position, null, Color.White,
+                Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f);
+        }
 
     }
 }
