@@ -59,23 +59,25 @@ namespace GameUlearn
                 Exit();
 
             if (keyboardState.IsKeyDown(Keys.A))
-                player.Left(map.boxes);
+                player.Left(map.boxes, zombies);
             if (keyboardState.IsKeyDown(Keys.D))
-                player.Right(map.boxes);
+                player.Right(map.boxes, zombies);
             if (keyboardState.IsKeyDown(Keys.W))
-                player.Up(map.boxes);
+                player.Up(map.boxes, zombies);
             if (keyboardState.IsKeyDown(Keys.S))
-                player.Down(map.boxes);
+                player.Down(map.boxes, zombies);
             if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed)
                 bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
-            if (totalTime % 10000 == 0 /*&& totalTime > 1*/)
+            if ((int)totalTime % 10000 == 0)
                 zombies.Add(new Zombie(simpleZombieImg));
+            foreach (var zombie in zombies)
+                zombie.ChagneRotation(player);
             
 
             player.ChagneRotation();
             for (var i = bullets.Count - 1; i >= 0; i--)
-                if (bullets[i].IsNeedToDelete(map.boxes))
+                if (bullets[i].IsNeedToDelete(map.boxes, zombies))
                     bullets.RemoveAt(i);
             
 
@@ -94,6 +96,8 @@ namespace GameUlearn
                 box.Draw(_spriteBatch);            
             foreach (var zombie in zombies)
                 zombie.Draw(_spriteBatch);
+
+
             _spriteBatch.End();
 
 

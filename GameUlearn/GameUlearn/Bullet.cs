@@ -33,18 +33,18 @@ namespace GameUlearn
             spriteBatch.Draw(Image, rectangle, null,Color.White, Direction, new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
         }
 
-        public bool IsNeedToDelete(List<Box> boxes)
+        public bool IsNeedToDelete(List<Box> boxes, List<Zombie> zombies)
         {
-            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes);
+            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes, zombies);
         }
 
-        private bool Intersected(List<Box> boxes)
+        private bool Intersected(List<Box> boxes, List<Zombie> zombies)
         {
-/*            foreach (var zombie in zombies)
+            foreach (var zombie in zombies)
             {
                 if (rectangle.Intersects(zombie.Rectangle))
                     return true;
-            }*/
+            }
 
             foreach (var box in boxes)
             {

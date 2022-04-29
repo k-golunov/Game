@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Threading;
 
 namespace GameUlearn
 {
@@ -28,27 +30,27 @@ namespace GameUlearn
             Position = position;
         }
 
-        public void Up(List<Box> boxes)
+        public void Up(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y - 2 * speed), Image.Width, Image.Height))) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y - 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.Y > 20) Position.Y -= speed;
         }
 
-        public void Down(List<Box> boxes)
+        public void Down(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y + 2 * speed), Image.Width, Image.Height))) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y + 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.Y < 1030) Position.Y += speed;
         }
 
-        public void Left(List<Box> boxes)
+        public void Left(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X - 2* speed), (int)(Position.Y), Image.Width, Image.Height))) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X - 0.5 * speed), (int)(Position.Y), Image.Width, Image.Height), zombies)) return;
             if (Position.X > 20) Position.X -= speed;
         }
 
-        public void Right(List<Box> boxes)
+        public void Right(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X + 2 * speed), (int)(Position.Y), Image.Width, Image.Height))) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X + 0.5 * speed), (int)(Position.Y), Image.Width, Image.Height), zombies)) return;
             if (Position.X < 1900) Position.X += speed;
         }
 
@@ -59,13 +61,42 @@ namespace GameUlearn
             spriteBatch.DrawString(HealthbarFont, $"Health: {Healthy} / 100", new Vector2(10, 950), Color.Pink);
         }
 
-        private bool Intersected(List<Box> boxes, Rectangle rectangle) // try create field rectangle for player or/and entity
+        private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies) // try create field rectangle for player or/and entity
         {
             foreach (var box in boxes)
             {
                 if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
                     return true;
             }
+
+            return IntersetsWithZombie(rectangle, zombies);
+
+/*            foreach (var zombie in zombies)
+            {
+                if (rectangle.Intersects(zombie.Rectangle))
+                    return true;
+            }
+
+            return false;*/
+        }
+
+        private bool IntersetsWithZombie(Rectangle rectangle, List<Zombie> zombies)
+        {
+
+            foreach (var zombie in zombies)
+            {
+                if (rectangle.Intersects(zombie.Rectangle))
+                {
+                    var timer = new System.Timers.Timer();
+                    timer.Elapsed += Damage;
+                    timer.Start();
+                    Thread.Sleep(100);
+                    timer.Stop();
+                    //Damage();  
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -80,29 +111,41 @@ namespace GameUlearn
 
         private void HealthBar()
         {
-
+            
         }
 
-        private void Damage()
+        private void Damage(Object source, ElapsedEventArgs e)
         {
+/*            var timer = new Timer();
 
+
+
+            var gameTime = new GameTime();
+            var time = gameTime.TotalGameTime.TotalMilliseconds;
+            if ((int)time % 10000 == 0)*/
+                Healthy -= 10;
         }
     }
 
     class Zombie : Entity
     {
         private readonly float speed = 0.5f;
+        public Rectangle Rectangle;
 
         public Zombie(Texture2D image)
         {
             Image = image;
             SetRandomPosition();
             Rotation = 1f;
+            Rectangle.Width = Image.Width;
+            Rectangle.Height = Image.Height;
         }
 
         public void Move(Vector2 playerPosition)
         {
-
+            if (Intersected()) return;
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
         }
 
         private void FindWayToPlayer(Vector2 playerPosition)
@@ -115,11 +158,23 @@ namespace GameUlearn
             var rand = new Random();
             Position.X = (float)rand.Next(0, 1980);
             Position.Y = (float)rand.Next(0, 1080);
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
         }
 
         public bool Intersected()
         {
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             return false;
+        }
+
+        public void ChagneRotation(Player player)
+        {
+            var playerPos = new Vector2(player.Position.X, player.Position.Y);
+            var direction = playerPos - Position;
+            direction.Normalize();
+            Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
         }
 
         public void Draw(SpriteBatch spriteBatch)
