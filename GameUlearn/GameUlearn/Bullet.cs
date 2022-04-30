@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    class Bullet
+    public class Bullet
     {
         private Texture2D Image;
         private float Direction;

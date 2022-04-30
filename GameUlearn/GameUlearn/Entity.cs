@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace GameUlearn
 {
-    class Entity
+    public class Entity
     {
         public Texture2D Image;
         public Vector2 Position;
@@ -19,7 +19,7 @@ namespace GameUlearn
         public SpriteFont HealthbarFont;
     }
 
-    class Player : Entity
+    public class Player : Entity
     {
         readonly float speed = 1f;
         
@@ -127,7 +127,7 @@ namespace GameUlearn
         }
     }
 
-    class Zombie : Entity
+    public class Zombie : Entity
     {
         private readonly float speed = 0.5f;
         public Rectangle Rectangle;

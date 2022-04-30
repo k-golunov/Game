@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GameUlearn
 {
-    class Map
+    public class Map
     {
         public Texture2D[] Image = new Texture2D[10];
         public List<Box> boxes = new List<Box>();
@@ -49,7 +49,7 @@ namespace GameUlearn
         }
     }
 
-    class Box
+    public class Box
     {
         readonly Texture2D Image;
         readonly Rectangle Rectangle;

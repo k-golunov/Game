@@ -17,6 +17,9 @@ namespace GameUlearn
         private Map map = new Map();
         MouseState previousMouse;
         List<Zombie> zombies = new List<Zombie>();
+        GameState gameState = GameState.Menu;
+        MenuOptions option = MenuOptions.New;
+        int optionCounter = 1;
 
         public Game1()
         {
