@@ -6,7 +6,7 @@ namespace GameUlearn
 {
     enum MenuOptions
     {
-        New,
+        Play,
         Scores,
         Exit
     }

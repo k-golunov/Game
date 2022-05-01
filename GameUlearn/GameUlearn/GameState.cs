@@ -7,6 +7,7 @@ namespace GameUlearn
     enum GameState
     {
         Game,
-        Menu
+        Menu,
+        Scores
     }
 }
