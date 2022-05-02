@@ -17,11 +17,13 @@ namespace GameUlearn
         //public Rectangle Rectangle;
         public int Healthy = 100;
         public SpriteFont HealthbarFont;
+        public double TotalTime;
+        public double prevTime;
     }
 
     public class Player : Entity
     {
-        readonly float speed = 1f;
+        readonly float speed = 5f;
         
 
         public Player() { }
@@ -82,17 +84,18 @@ namespace GameUlearn
 
         private bool IntersetsWithZombie(Rectangle rectangle, List<Zombie> zombies)
         {
-
+            //var prevTime = -1.0;
             foreach (var zombie in zombies)
             {
                 if (rectangle.Intersects(zombie.Rectangle))
                 {
-                    var timer = new System.Timers.Timer();
-                    timer.Elapsed += Damage;
-                    timer.Start();
-                    Thread.Sleep(100);
-                    timer.Stop();
-                    //Damage();  
+                    // урон проходит, но зомби всегда должен пытаться двигаться на игрока
+                    if (TotalTime - prevTime >= 2000)
+                    {
+                        Damage();
+                        prevTime = TotalTime;
+                    }
+                        
                     return true;
                 }
             }
@@ -114,7 +117,7 @@ namespace GameUlearn
             
         }
 
-        private void Damage(Object source, ElapsedEventArgs e)
+        private void Damage(/*Object source, ElapsedEventArgs e*/)
         {
 /*            var timer = new Timer();
 

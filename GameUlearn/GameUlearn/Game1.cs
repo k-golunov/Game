@@ -102,6 +102,7 @@ namespace GameUlearn
             switch (gameState)
             {
                 case (GameState.Game):
+                    player.TotalTime = totalTime;
                     if (keyboardState.IsKeyDown(Keys.A))
                         player.Left(map.boxes, zombies);
                     if (keyboardState.IsKeyDown(Keys.D))
@@ -118,8 +119,9 @@ namespace GameUlearn
                     foreach (var zombie in zombies)
                         zombie.ChagneRotation(player);
 
-
                     player.ChagneRotation();
+                    
+
                     for (var i = bullets.Count - 1; i >= 0; i--)
                         if (bullets[i].IsNeedToDelete(map.boxes, zombies))
                             bullets.RemoveAt(i);
@@ -141,7 +143,7 @@ namespace GameUlearn
                                 break;
 
                             case MenuOptions.Scores:
-
+                                // добавить отдельное окно игры с очками
                                 
                                 break;
 
@@ -189,14 +191,14 @@ namespace GameUlearn
                         _spriteBatch.DrawString(mainFont, gamePlay, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.4)), Color.White);
 
                     if (option == MenuOptions.Scores)
-                        _spriteBatch.DrawString(mainFont, gameScores, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.6)), Color.Black);
+                        _spriteBatch.DrawString(mainFont, gameScores, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.45)), Color.Black);
                     else
-                        _spriteBatch.DrawString(mainFont, gameScores, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.6)), Color.White);
+                        _spriteBatch.DrawString(mainFont, gameScores, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.45)), Color.White);
 
                     if (option == MenuOptions.Exit)
-                        _spriteBatch.DrawString(mainFont, gameExit, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.8)), Color.Black);
+                        _spriteBatch.DrawString(mainFont, gameExit, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.5)), Color.Black);
                     else
-                        _spriteBatch.DrawString(mainFont, gameExit, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.8)), Color.White);
+                        _spriteBatch.DrawString(mainFont, gameExit, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.5)), Color.White);
 
                     break;
             }
