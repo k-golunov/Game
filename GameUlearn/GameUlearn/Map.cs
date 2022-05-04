@@ -39,7 +39,7 @@ namespace GameUlearn
             { 
                 for (var j = 0; j < map.GetLength(1); j++)
 			    {
-                    var rect = new Rectangle(x, y, 64, 64);
+                    var rect = new Rectangle(x, y, 48, 48);
                     boxes.Add(new Box(Image[map[i,j]], rect, map[i, j]));
                     x += 64;
 			    }

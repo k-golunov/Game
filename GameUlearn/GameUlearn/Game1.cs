@@ -57,8 +57,8 @@ namespace GameUlearn
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = 1980;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            _graphics.PreferredBackBufferHeight = 1080;//GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            _graphics.PreferredBackBufferWidth = /*1920;*/GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            _graphics.PreferredBackBufferHeight = /*1080;*/GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             //_graphics.ToggleFullScreen();
             
             Window.AllowUserResizing = true;
@@ -117,7 +117,11 @@ namespace GameUlearn
                     if ((int)totalTime % 10000 == 0)
                         zombies.Add(new Zombie(simpleZombieImg));
                     foreach (var zombie in zombies)
+                    {
                         zombie.ChagneRotation(player);
+                        zombie.Move(player);
+                    }
+                        
 
                     player.ChagneRotation();
                     
@@ -125,6 +129,9 @@ namespace GameUlearn
                     for (var i = bullets.Count - 1; i >= 0; i--)
                         if (bullets[i].IsNeedToDelete(map.boxes, zombies))
                             bullets.RemoveAt(i);
+
+                    if (player.Healthy <= 0)
+                        StartNewGame();
 
                     break;
 
@@ -144,7 +151,7 @@ namespace GameUlearn
 
                             case MenuOptions.Scores:
                                 // добавить отдельное окно игры с очками
-                                
+                                gameState = GameState.Scores;
                                 break;
 
                             case MenuOptions.Exit:
@@ -153,6 +160,11 @@ namespace GameUlearn
                                 break;
                         }
                     }
+
+
+                    break;
+
+                case (GameState.Scores):
 
 
                     break;
@@ -201,6 +213,10 @@ namespace GameUlearn
                         _spriteBatch.DrawString(mainFont, gameExit, new Vector2((int)(1980 * 0.45), (int)(1080 * 0.5)), Color.White);
 
                     break;
+
+                case (GameState.Scores):
+
+                    break;
             }
             _spriteBatch.End();
 
@@ -210,6 +226,11 @@ namespace GameUlearn
 
         private void StartNewGame() // этот метод нужен для создания новой игры
         {
+            bullets.Clear();
+            player.Position.X = 20;
+            player.Position.Y = 20;
+            zombies.Clear();
+            player.Healthy = 100;
             // в методе нужно обнулять все значения
         }
     }

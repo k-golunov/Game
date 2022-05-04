@@ -90,6 +90,7 @@ namespace GameUlearn
                 if (rectangle.Intersects(zombie.Rectangle))
                 {
                     // урон проходит, но зомби всегда должен пытаться двигаться на игрока
+                    // чтобы исправить, надо вызывать метод не только при движении, или наносить урон другим методом, вызывая его постоянно
                     if (TotalTime - prevTime >= 2000)
                     {
                         Damage();
@@ -119,13 +120,6 @@ namespace GameUlearn
 
         private void Damage(/*Object source, ElapsedEventArgs e*/)
         {
-/*            var timer = new Timer();
-
-
-
-            var gameTime = new GameTime();
-            var time = gameTime.TotalGameTime.TotalMilliseconds;
-            if ((int)time % 10000 == 0)*/
                 Healthy -= 10;
         }
     }
@@ -144,31 +138,64 @@ namespace GameUlearn
             Rectangle.Height = Image.Height;
         }
 
-        public void Move(Vector2 playerPosition)
+        public void Move(Player player)
         {
-            if (Intersected()) return;
+            if (Intersected(player)) return;
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
+            FindWayToPlayer(player);
         }
 
-        private void FindWayToPlayer(Vector2 playerPosition)
+        private void FindWayToPlayer(Player player)
         {
+            var a = Math.Abs(player.Position.X - Position.X);
+            var b = Math.Abs(player.Position.Y - Position.Y);
+            if (Math.Sqrt(a+b) < 400)
+            {
+                if (Intersected(player)) return; 
+                if (player.Position.X >= Position.X && player.Position.Y >= Position.Y)
+                {
+                    Position.X += speed;
+                    Position.Y += speed;
+                }
+
+                else if (player.Position.X < Position.X && player.Position.Y < Position.Y)
+                {
+                    Position.X -= speed;
+                    Position.Y -= speed;
+                }
+
+                else if (player.Position.X < Position.X && player.Position.Y >= Position.Y)
+                {
+                    Position.X -= speed;
+                    Position.Y += speed;
+                }
+
+                else
+                {
+                    Position.X += speed;
+                    Position.Y -= speed;
+                }
+            }
+
 
         }
 
         public void SetRandomPosition()
         {
             var rand = new Random();
-            Position.X = (float)rand.Next(0, 1980);
-            Position.Y = (float)rand.Next(0, 1080);
+            Position.X = rand.Next(0, 1920);
+            Position.Y = rand.Next(0, 1080);
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
         }
 
-        public bool Intersected()
+        public bool Intersected(Player player)
         {
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
+            if (Rectangle.Intersects(new Rectangle((int)player.Position.X, (int)player.Position.Y, player.Image.Width, player.Image.Height)) /*&& box.NumberTexture == 4*/)
+                return true;
             return false;
         }
 
