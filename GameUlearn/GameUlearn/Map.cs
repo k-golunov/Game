@@ -64,7 +64,7 @@ namespace GameUlearn
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Image, Rectangle, Color.White);
+            spriteBatch.Draw(Image, Rectangle,null ,Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
         }
 
         public Rectangle GetRectangle() => Rectangle;

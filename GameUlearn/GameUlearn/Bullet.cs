@@ -54,5 +54,8 @@ namespace GameUlearn
             return false;
             
         }
+
+        public Rectangle GetRectangle() => rectangle;
+        
     }
 }

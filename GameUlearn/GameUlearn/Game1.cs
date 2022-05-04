@@ -26,6 +26,8 @@ namespace GameUlearn
         string gamePlay = "Play";
         string gameScores = "Scores";
         string gameExit = "Exit";
+        List<Zombie> deadZombie = new List<Zombie>();
+        int scores = 0;
 
         int OptionsCounter
         {
@@ -114,17 +116,29 @@ namespace GameUlearn
                     if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed)
                         bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
+                    if ((int)totalTime % 1000 == 0)
+                        scores += 10;
+
                     if ((int)totalTime % 10000 == 0)
                         zombies.Add(new Zombie(simpleZombieImg));
                     foreach (var zombie in zombies)
                     {
                         zombie.ChagneRotation(player);
                         zombie.Move(player);
+                        if (zombie.IntersetsWithBullet(bullets))
+                            deadZombie.Add(zombie);
                     }
-                        
+
+                    scores += deadZombie.Count * 50;
+
+                    if (deadZombie.Count != 0)
+                    {
+                        foreach (var dead in deadZombie)
+                            zombies.Remove(dead);
+                        deadZombie.Clear();
+                    }
 
                     player.ChagneRotation();
-                    
 
                     for (var i = bullets.Count - 1; i >= 0; i--)
                         if (bullets[i].IsNeedToDelete(map.boxes, zombies))
@@ -191,6 +205,7 @@ namespace GameUlearn
                         box.Draw(_spriteBatch);
                     foreach (var zombie in zombies)
                         zombie.Draw(_spriteBatch);
+                    _spriteBatch.DrawString(mainFont, $"Scores: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
                     break;
 

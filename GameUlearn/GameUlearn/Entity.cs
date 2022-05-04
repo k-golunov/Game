@@ -32,27 +32,30 @@ namespace GameUlearn
             Position = position;
         }
 
+        // можно добавить в перемещение также проверку по второй координате, тогда, скорее всего,
+        //
+        // уйдет проблема с невозможностью двигаться в две стороны, ведь по сути граница должна запрещать движение в одну сторону
         public void Up(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y - 0.5 * speed), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X + 0.5 * speed), (int)(Position.Y - 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.Y > 20) Position.Y -= speed;
         }
 
         public void Down(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y + 0.5 * speed), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X - 0.5 * speed), (int)(Position.Y + 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.Y < 1030) Position.Y += speed;
         }
 
         public void Left(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X - 0.5 * speed), (int)(Position.Y), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X - 0.5 * speed), (int)(Position.Y + 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.X > 20) Position.X -= speed;
         }
 
         public void Right(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X + 0.5 * speed), (int)(Position.Y), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X + 0.5 * speed), (int)(Position.Y - 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.X < 1900) Position.X += speed;
         }
 
@@ -60,7 +63,7 @@ namespace GameUlearn
         {
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f);
-            spriteBatch.DrawString(HealthbarFont, $"Health: {Healthy} / 100", new Vector2(10, 950), Color.Pink);
+            spriteBatch.DrawString(HealthbarFont, $"Healthy: {Healthy} / 100", new Vector2(10, 950), Color.Pink);
         }
 
         private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies) // try create field rectangle for player or/and entity
@@ -150,7 +153,7 @@ namespace GameUlearn
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
-            if (Math.Sqrt(a+b) < 400)
+            if (Math.Sqrt(a * a + b * b) < 400)
             {
                 if (Intersected(player)) return; 
                 if (player.Position.X >= Position.X && player.Position.Y >= Position.Y)
@@ -196,6 +199,17 @@ namespace GameUlearn
             Rectangle.Y = (int)Position.Y;
             if (Rectangle.Intersects(new Rectangle((int)player.Position.X, (int)player.Position.Y, player.Image.Width, player.Image.Height)) /*&& box.NumberTexture == 4*/)
                 return true;
+            return false;
+        }
+
+        public bool IntersetsWithBullet(List<Bullet> bullets)
+        {
+            foreach (var bullet in bullets)
+            {
+                if (Rectangle.Intersects(bullet.GetRectangle()))
+                    return true;
+            }
+
             return false;
         }
 
