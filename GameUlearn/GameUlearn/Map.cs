@@ -39,7 +39,7 @@ namespace GameUlearn
             { 
                 for (var j = 0; j < map.GetLength(1); j++)
 			    {
-                    var rect = new Rectangle(x, y, 48, 48);
+                    var rect = new Rectangle(x, y, 64, 64);
                     boxes.Add(new Box(Image[map[i,j]], rect, map[i, j]));
                     x += 64;
 			    }
@@ -64,7 +64,7 @@ namespace GameUlearn
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Image, Rectangle,null ,Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+            spriteBatch.Draw(Image, Rectangle, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
         }
 
         public Rectangle GetRectangle() => Rectangle;

@@ -14,7 +14,7 @@ namespace GameUlearn
         public Texture2D Image;
         public Vector2 Position;
         public float Rotation;
-        //public Rectangle Rectangle;
+        public Rectangle Rectangle;
         public int Healthy = 100;
         public SpriteFont HealthbarFont;
         public double TotalTime;
@@ -30,6 +30,7 @@ namespace GameUlearn
         public Player(Vector2 position)
         {
             Position = position;
+            Rectangle = new Rectangle((int)Position.X, (int)Position.Y, Image.Width, Image.Height);
         }
 
         // можно добавить в перемещение также проверку по второй координате, тогда, скорее всего,
@@ -43,19 +44,19 @@ namespace GameUlearn
 
         public void Down(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X - 0.5 * speed), (int)(Position.Y + 0.5 * speed), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X - 2), (int)(Position.Y + 2), Image.Width, Image.Height), zombies)) return;
             if (Position.Y < 1030) Position.Y += speed;
         }
 
         public void Left(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X - 0.5 * speed), (int)(Position.Y + 0.5 * speed), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X - 2), (int)(Position.Y + 2), Image.Width, Image.Height), zombies)) return;
             if (Position.X > 20) Position.X -= speed;
         }
 
         public void Right(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X + 0.5 * speed), (int)(Position.Y - 0.5 * speed), Image.Width, Image.Height), zombies)) return;
+            if (Intersected(boxes, new Rectangle((int)(Position.X + 2), (int)(Position.Y - 2d), Image.Width, Image.Height), zombies)) return;
             if (Position.X < 1900) Position.X += speed;
         }
 
@@ -63,16 +64,20 @@ namespace GameUlearn
         {
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f);
-            spriteBatch.DrawString(HealthbarFont, $"Healthy: {Healthy} / 100", new Vector2(10, 950), Color.Pink);
+            spriteBatch.DrawString(HealthbarFont, $"Здоровье: {Healthy} / 100", new Vector2(10, 950), Color.Red);
         }
 
         private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies) // try create field rectangle for player or/and entity
         {
-            foreach (var box in boxes)
+/*            foreach (var box in boxes)
             {
-                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
+                var inBoxForX = Math.Abs(box.GetRectangle().X - rectangle.X);
+                var inBoxForY = Math.Abs(box.GetRectangle().Y - rectangle.Y);
+                if (inBoxForX < 64 && inBoxForY < 64) continue;
+                if (*//*rectangle.Intersects(box.GetRectangle())*//* (rectangle.Right > box.GetRectangle().Right || rectangle.Left > box.GetRectangle().Left) && box.NumberTexture == 4) 
+                    // нужна проверка, находится ли игрок в этом боксе
                     return true;
-            }
+            }*/
 
             return IntersetsWithZombie(rectangle, zombies);
 

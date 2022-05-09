@@ -22,10 +22,10 @@ namespace GameUlearn
         GameState gameState = GameState.Menu;
         MenuOptions option = MenuOptions.Play;
         int optionCounter = 1;
-        string gameTitle = "2D Shooter";
-        string gamePlay = "Play";
-        string gameScores = "Scores";
-        string gameExit = "Exit";
+        string gameTitle = "2Д Шутер";
+        string gamePlay = "Играть";
+        string gameScores = "Очки";
+        string gameExit = "Выход";
         List<Zombie> deadZombie = new List<Zombie>();
         int scores = 0;
 
@@ -131,6 +131,10 @@ namespace GameUlearn
 
                     scores += deadZombie.Count * 50;
 
+                    for (var i = bullets.Count - 1; i >= 0; i--)
+                        if (bullets[i].IsNeedToDelete(map.boxes, zombies))
+                            bullets.RemoveAt(i);
+
                     if (deadZombie.Count != 0)
                     {
                         foreach (var dead in deadZombie)
@@ -140,9 +144,9 @@ namespace GameUlearn
 
                     player.ChagneRotation();
 
-                    for (var i = bullets.Count - 1; i >= 0; i--)
+/*                    for (var i = bullets.Count - 1; i >= 0; i--)
                         if (bullets[i].IsNeedToDelete(map.boxes, zombies))
-                            bullets.RemoveAt(i);
+                            bullets.RemoveAt(i);*/
 
                     if (player.Healthy <= 0)
                         StartNewGame();
@@ -205,7 +209,7 @@ namespace GameUlearn
                         box.Draw(_spriteBatch);
                     foreach (var zombie in zombies)
                         zombie.Draw(_spriteBatch);
-                    _spriteBatch.DrawString(mainFont, $"Scores: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                    _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
                     break;
 
@@ -246,6 +250,7 @@ namespace GameUlearn
             player.Position.Y = 20;
             zombies.Clear();
             player.Healthy = 100;
+            scores = 0;
             // в методе нужно обнулять все значения
         }
     }
