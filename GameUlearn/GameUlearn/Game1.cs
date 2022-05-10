@@ -28,6 +28,7 @@ namespace GameUlearn
         string gameExit = "Выход";
         List<Zombie> deadZombie = new List<Zombie>();
         int scores = 0;
+        Dictionary<DateTime, int> timeAndScores = new Dictionary<DateTime, int>();
 
         int OptionsCounter
         {
@@ -78,7 +79,7 @@ namespace GameUlearn
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             player.Image = Content.Load<Texture2D>("soldier1_gun");
             BulletImg = Content.Load<Texture2D>("weapon_gun");
-            map.Image[4] = Content.Load<Texture2D>("glass_vertical");
+            map.Image[4] = Content.Load<Texture2D>("walls1");
             map.Image[0] = Content.Load<Texture2D>("grass");
             player.HealthbarFont = Content.Load<SpriteFont>("Arial");
             simpleZombieImg = Content.Load<Texture2D>("zoimbie1_hold");
@@ -144,10 +145,6 @@ namespace GameUlearn
 
                     player.ChagneRotation();
 
-/*                    for (var i = bullets.Count - 1; i >= 0; i--)
-                        if (bullets[i].IsNeedToDelete(map.boxes, zombies))
-                            bullets.RemoveAt(i);*/
-
                     if (player.Healthy <= 0)
                         StartNewGame();
 
@@ -183,7 +180,7 @@ namespace GameUlearn
                     break;
 
                 case (GameState.Scores):
-
+                    // добавить словарь с временем и очками игрока, можно запариться и добавить введение ника игрока
 
                     break;
                 
@@ -211,6 +208,24 @@ namespace GameUlearn
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
+                    // добавить отдельный класс TimeEvent
+                    if (gameTime.TotalGameTime.TotalSeconds <= 10)
+                    {
+                        _spriteBatch.DrawString(mainFont, "Для перемещения используйте WASD", 
+                            new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                        _spriteBatch.DrawString(mainFont, "Чтобы стрелять нажмите ЛКМ",
+                            new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                    }
+
+                    else if (gameTime.TotalGameTime.TotalSeconds <= 18 && gameTime.TotalGameTime.TotalSeconds > 8)
+                    {
+                        _spriteBatch.DrawString(mainFont, "Цель игры - не погибнуть от зомби и прожить как можно дольше",
+                            new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                        _spriteBatch.DrawString(mainFont, "Удачи! GL HF",
+                            new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                    }
+                       
+
                     break;
 
                 case (GameState.Menu):
@@ -234,6 +249,12 @@ namespace GameUlearn
                     break;
 
                 case (GameState.Scores):
+                    var y = 1080 * 0.01;
+                    foreach (var key in timeAndScores.Keys)
+                    {
+                        _spriteBatch.DrawString(mainFont, key.ToString(), new Vector2(400, (float)y), Color.White);
+                        _spriteBatch.DrawString(mainFont, timeAndScores[key].ToString(), new Vector2(700, (float)y), Color.White);
+                    }    
 
                     break;
             }
@@ -245,6 +266,8 @@ namespace GameUlearn
 
         private void StartNewGame() // этот метод нужен для создания новой игры
         {
+            var time = DateTime.Now;
+            timeAndScores[time] = scores;
             bullets.Clear();
             player.Position.X = 20;
             player.Position.Y = 20;

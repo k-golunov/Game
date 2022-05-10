@@ -19,6 +19,7 @@ namespace GameUlearn
         public SpriteFont HealthbarFont;
         public double TotalTime;
         public double prevTime;
+        public Keys LastKeyToMove = Keys.None;
     }
 
     public class Player : Entity
@@ -33,31 +34,40 @@ namespace GameUlearn
             Rectangle = new Rectangle((int)Position.X, (int)Position.Y, Image.Width, Image.Height);
         }
 
-        // можно добавить в перемещение также проверку по второй координате, тогда, скорее всего,
-        //
-        // уйдет проблема с невозможностью двигаться в две стороны, ведь по сути граница должна запрещать движение в одну сторону
         public void Up(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X + 0.5 * speed), (int)(Position.Y - 0.5 * speed), Image.Width, Image.Height), zombies)) return;
             if (Position.Y > 20) Position.Y -= speed;
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies)) 
+                Position.Y += speed;
+            
+            LastKeyToMove = Keys.W;
         }
 
         public void Down(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X - 2), (int)(Position.Y + 2), Image.Width, Image.Height), zombies)) return;
             if (Position.Y < 1030) Position.Y += speed;
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies)) 
+                Position.Y -= speed;
+            
+            LastKeyToMove = Keys.S;
         }
 
         public void Left(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X - 2), (int)(Position.Y + 2), Image.Width, Image.Height), zombies)) return;
             if (Position.X > 20) Position.X -= speed;
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies)) 
+                Position.X += speed;
+            
+            LastKeyToMove = Keys.A;
         }
 
         public void Right(List<Box> boxes, List<Zombie> zombies)
         {
-            if (Intersected(boxes, new Rectangle((int)(Position.X + 2), (int)(Position.Y - 2d), Image.Width, Image.Height), zombies)) return;
-            if (Position.X < 1900) Position.X += speed;
+            if (Position.X < 1900) Position.X += speed; 
+            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies))
+                Position.X -= speed;
+            
+            LastKeyToMove = Keys.D;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -69,25 +79,15 @@ namespace GameUlearn
 
         private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies) // try create field rectangle for player or/and entity
         {
-/*            foreach (var box in boxes)
+            foreach (var box in boxes)
             {
-                var inBoxForX = Math.Abs(box.GetRectangle().X - rectangle.X);
-                var inBoxForY = Math.Abs(box.GetRectangle().Y - rectangle.Y);
-                if (inBoxForX < 64 && inBoxForY < 64) continue;
-                if (*//*rectangle.Intersects(box.GetRectangle())*//* (rectangle.Right > box.GetRectangle().Right || rectangle.Left > box.GetRectangle().Left) && box.NumberTexture == 4) 
-                    // нужна проверка, находится ли игрок в этом боксе
+                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
+                    // нужна проверка, находится ли игрок в этом боксе 
                     return true;
-            }*/
 
-            return IntersetsWithZombie(rectangle, zombies);
-
-/*            foreach (var zombie in zombies)
-            {
-                if (rectangle.Intersects(zombie.Rectangle))
-                    return true;
             }
 
-            return false;*/
+            return IntersetsWithZombie(rectangle, zombies);
         }
 
         private bool IntersetsWithZombie(Rectangle rectangle, List<Zombie> zombies)
@@ -134,8 +134,9 @@ namespace GameUlearn
 
     public class Zombie : Entity
     {
-        private readonly float speed = 0.5f;
-        public Rectangle Rectangle;
+        private float speed = 0.5f;
+
+        public Zombie() { }
 
         public Zombie(Texture2D image)
         {
@@ -189,7 +190,7 @@ namespace GameUlearn
 
         }
 
-        public void SetRandomPosition()
+        public virtual void SetRandomPosition()
         {
             var rand = new Random();
             Position.X = rand.Next(0, 1920);
