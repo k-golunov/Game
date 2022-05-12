@@ -29,6 +29,7 @@ namespace GameUlearn
         List<Zombie> deadZombie = new List<Zombie>();
         int scores = 0;
         Dictionary<DateTime, int> timeAndScores = new Dictionary<DateTime, int>();
+        BossLevel1 boss1;
 
         int OptionsCounter
         {
@@ -71,6 +72,7 @@ namespace GameUlearn
         protected override void Initialize()
         {
             player = new Player();
+            boss1 = new BossLevel1(BulletImg);
             base.Initialize();
         }
 
@@ -84,6 +86,8 @@ namespace GameUlearn
             player.HealthbarFont = Content.Load<SpriteFont>("Arial");
             simpleZombieImg = Content.Load<Texture2D>("zoimbie1_hold");
             mainFont = Content.Load<SpriteFont>("Arial");
+            boss1.Image = Content.Load<Texture2D>("boss");
+            boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
             map.GenerateMap();
         }
 
@@ -144,9 +148,20 @@ namespace GameUlearn
                     }
 
                     player.ChagneRotation();
+                    player.UpdateRectangle();
 
                     if (player.Healthy <= 0)
                         StartNewGame();
+
+
+                    // логика босса поменять время с 30 сек на 2 минуты в конце
+                    if ((int)totalTime >= 1800)
+                    {
+                        boss1.Update((int)totalTime, player, map, zombies);
+                        boss1.Move(player);
+                    }
+                    
+                        
 
                     break;
 
@@ -207,6 +222,9 @@ namespace GameUlearn
                     foreach (var zombie in zombies)
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= 18000)
+                        boss1.Draw(_spriteBatch);
 
                     // добавить отдельный класс TimeEvent
                     if (gameTime.TotalGameTime.TotalSeconds <= 10)

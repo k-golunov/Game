@@ -70,6 +70,13 @@ namespace GameUlearn
             LastKeyToMove = Keys.D;
         }
 
+        // потом вставить изменения в методы перемещения (под вопросом)
+        public void UpdateRectangle()
+        {
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(Image, Position, null, Color.White,
@@ -121,12 +128,7 @@ namespace GameUlearn
             Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
         }
 
-        private void HealthBar()
-        {
-            
-        }
-
-        private void Damage(/*Object source, ElapsedEventArgs e*/)
+        public void Damage(/*Object source, ElapsedEventArgs e*/)
         {
                 Healthy -= 10;
         }
@@ -147,7 +149,7 @@ namespace GameUlearn
             Rectangle.Height = Image.Height;
         }
 
-        public void Move(Player player)
+        public virtual void Move(Player player)
         {
             if (Intersected(player)) return;
             Rectangle.X = (int)Position.X;
@@ -155,7 +157,7 @@ namespace GameUlearn
             FindWayToPlayer(player);
         }
 
-        private void FindWayToPlayer(Player player)
+        public virtual void FindWayToPlayer(Player player)
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
@@ -219,7 +221,7 @@ namespace GameUlearn
             return false;
         }
 
-        public void ChagneRotation(Player player)
+        public virtual void ChagneRotation(Player player)
         {
             var playerPos = new Vector2(player.Position.X, player.Position.Y);
             var direction = playerPos - Position;
