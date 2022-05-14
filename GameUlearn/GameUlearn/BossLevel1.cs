@@ -8,22 +8,30 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    class BossLevel1 : Zombie // надо убирать наследование и переписывать с нуля, иначе методы не работают
+    public class BossLevel1 // надо убирать наследование и переписывать с нуля, иначе методы не работают
     {
-        List<Bullet> bullets = new List<Bullet>();
+        public List<Bullet> bullets = new List<Bullet>();
         
         private float speed = 0.1f;
         public Texture2D BulletImg;
-/*        public Vector2 Position;
+        public int Healthy = 1000;
+        public Vector2 Position;
         public float Rotation;
         public Rectangle HitBox;
-        public Texture2D Image;*/
+        public Texture2D Image;
 
-        public BossLevel1(Texture2D bulletImg)
+        public BossLevel1()
         {
-            BulletImg = bulletImg;            
+            //BulletImg = bulletImg;            
             Position.X = 250;
             Position.Y = 250;
+
+        }
+
+        public void SetSizeHitBox()
+        {
+            HitBox.Width = Image.Width;
+            HitBox.Height = Image.Height;
         }
 
         public void SetPosition()
@@ -33,36 +41,39 @@ namespace GameUlearn
 
         public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies)
         {
+            HitBox.X = (int)Position.X;
+            HitBox.Y = (int)Position.Y;
             if (totalGameTime % 2000 == 0)
                 bullets.Add(new Bullet(BulletImg, Rotation, Position));
-            
-            //стрельба в игрока раз в 3 секунды, наносит 20 урона           
-            foreach (var bullet in bullets)
-                if (bullet.GetRectangle().Intersects(player.Rectangle))
-                    player.Healthy -= 20;
+
+            //стрельба в игрока раз в 3 секунды, наносит 20 урона
+            // почему-то урон проходит только если босс не двигается (уже не так)
+/*            foreach (var bullet in bullets)
+                if (player.Rectangle.Intersects(bullet.GetRectangle()))
+                    player.Healthy -= 20;*/
 
             // нужна другая проверка для босса, чтобы игроку наносился урон
             for (var i = bullets.Count - 1; i >= 0; i--)
-                if (bullets[i].IsNeedToDelete(map.boxes, zombies)) 
+                if (bullets[i].IsNeedToDelete(map.boxes, zombies, player))
                     bullets.RemoveAt(i);
             ChagneRotation(player);
         }
 
-/*        public void Move(Player player)
+        public void Move(Player player)
         {
-            //if (Intersected(player)) return;
+            if (Intersected(player)) return;
             HitBox.X = (int)Position.X;
             HitBox.Y = (int)Position.Y;
             FindWayToPlayer(player);
-        }*/
+        }
 
-/*        private void FindWayToPlayer(Player player)
+        private void FindWayToPlayer(Player player)
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
             if (Math.Sqrt(a * a + b * b) < 400)
             {
-                //if (Intersected(player)) return;
+                if (Intersected(player)) return;
                 if (player.Position.X >= Position.X && player.Position.Y >= Position.Y)
                 {
                     Position.X += speed;
@@ -87,13 +98,34 @@ namespace GameUlearn
                     Position.Y -= speed;
                 }
             }
-        }*/
+        }
 
+        public void ChagneRotation(Player player)
+        {
+            var playerPos = new Vector2(player.Position.X, player.Position.Y);
+            var direction = playerPos - Position;
+            direction.Normalize();
+            Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
+        }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public bool Intersected(Player player)
+        {
+            HitBox.X = (int)Position.X;
+            HitBox.Y = (int)Position.Y;
+            if (HitBox.Intersects(player.Rectangle/*new Rectangle((int)player.Position.X, (int)player.Position.Y, player.Image.Width, player.Image.Height)*/) /*&& box.NumberTexture == 4*/)
+                return true;
+            return false;
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Player player)
         {
             foreach (var bullet in bullets)
+            {
                 bullet.Draw(spriteBatch);
+/*                if (player.Rectangle.Intersects(bullet.GetRectangle()))
+                    player.Healthy -= 20;*/
+            }
+
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 2f, SpriteEffects.None, 1f);
         }

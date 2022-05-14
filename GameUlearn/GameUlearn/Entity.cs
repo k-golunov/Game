@@ -34,39 +34,55 @@ namespace GameUlearn
             Rectangle = new Rectangle((int)Position.X, (int)Position.Y, Image.Width, Image.Height);
         }
 
-        public void Up(List<Box> boxes, List<Zombie> zombies)
-        {
+        public void Up(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
+        {            
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             if (Position.Y > 20) Position.Y -= speed;
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies)) 
-                Position.Y += speed;
-            
+            if (Intersected(boxes, Rectangle, zombies, boss1)) 
+                Position.Y += 2 * speed;
+
+            //Rectangle.X = (int)Position.X;
+            //Rectangle.Y = (int)Position.Y;
             LastKeyToMove = Keys.W;
         }
 
-        public void Down(List<Box> boxes, List<Zombie> zombies)
-        {
+        public void Down(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
+        {            
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             if (Position.Y < 1030) Position.Y += speed;
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies)) 
-                Position.Y -= speed;
-            
+            if (Intersected(boxes, Rectangle, zombies, boss1)) 
+                Position.Y -= 2 * speed;
+
+            //Rectangle.X = (int)Position.X;
+            //Rectangle.Y = (int)Position.Y;
             LastKeyToMove = Keys.S;
         }
 
-        public void Left(List<Box> boxes, List<Zombie> zombies)
-        {
+        public void Left(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
+        {            
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             if (Position.X > 20) Position.X -= speed;
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies)) 
-                Position.X += speed;
-            
+            if (Intersected(boxes, Rectangle, zombies, boss1)) 
+                Position.X += 2 * speed;
+
+            //Rectangle.X = (int)Position.X;
+            //Rectangle.Y = (int)Position.Y;
             LastKeyToMove = Keys.A;
         }
 
-        public void Right(List<Box> boxes, List<Zombie> zombies)
-        {
+        public void Right(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
+        {            
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             if (Position.X < 1900) Position.X += speed; 
-            if (Intersected(boxes, new Rectangle((int)(Position.X), (int)(Position.Y), Image.Width, Image.Height), zombies))
-                Position.X -= speed;
-            
+            if (Intersected(boxes, Rectangle, zombies, boss1))
+                Position.X -= 2 * speed;
+
+            //Rectangle.X = (int)Position.X;
+            //Rectangle.Y = (int)Position.Y;
             LastKeyToMove = Keys.D;
         }
 
@@ -84,7 +100,7 @@ namespace GameUlearn
             spriteBatch.DrawString(HealthbarFont, $"Здоровье: {Healthy} / 100", new Vector2(10, 950), Color.Red);
         }
 
-        private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies) // try create field rectangle for player or/and entity
+        private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies, BossLevel1 boss1) // try create field rectangle for player or/and entity
         {
             foreach (var box in boxes)
             {
@@ -93,6 +109,9 @@ namespace GameUlearn
                     return true;
 
             }
+
+            if (boss1.HitBox.Intersects(rectangle))
+                return true;
 
             return IntersetsWithZombie(rectangle, zombies);
         }
@@ -149,7 +168,7 @@ namespace GameUlearn
             Rectangle.Height = Image.Height;
         }
 
-        public virtual void Move(Player player)
+        public void Move(Player player)
         {
             if (Intersected(player)) return;
             Rectangle.X = (int)Position.X;
@@ -157,7 +176,7 @@ namespace GameUlearn
             FindWayToPlayer(player);
         }
 
-        public virtual void FindWayToPlayer(Player player)
+        public void FindWayToPlayer(Player player)
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
@@ -189,10 +208,9 @@ namespace GameUlearn
                 }
             }
 
-
         }
 
-        public virtual void SetRandomPosition()
+        public void SetRandomPosition()
         {
             var rand = new Random();
             Position.X = rand.Next(0, 1920);
@@ -221,7 +239,7 @@ namespace GameUlearn
             return false;
         }
 
-        public virtual void ChagneRotation(Player player)
+        public void ChagneRotation(Player player)
         {
             var playerPos = new Vector2(player.Position.X, player.Position.Y);
             var direction = playerPos - Position;

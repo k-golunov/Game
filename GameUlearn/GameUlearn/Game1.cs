@@ -72,7 +72,7 @@ namespace GameUlearn
         protected override void Initialize()
         {
             player = new Player();
-            boss1 = new BossLevel1(BulletImg);
+            boss1 = new BossLevel1();
             base.Initialize();
         }
 
@@ -88,6 +88,7 @@ namespace GameUlearn
             mainFont = Content.Load<SpriteFont>("Arial");
             boss1.Image = Content.Load<Texture2D>("boss");
             boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
+            boss1.SetSizeHitBox();
             map.GenerateMap();
         }
 
@@ -111,13 +112,13 @@ namespace GameUlearn
                 case (GameState.Game):
                     player.TotalTime = totalTime;
                     if (keyboardState.IsKeyDown(Keys.A))
-                        player.Left(map.boxes, zombies);
+                        player.Left(map.boxes, zombies, boss1);
                     if (keyboardState.IsKeyDown(Keys.D))
-                        player.Right(map.boxes, zombies);
+                        player.Right(map.boxes, zombies, boss1);
                     if (keyboardState.IsKeyDown(Keys.W))
-                        player.Up(map.boxes, zombies);
+                        player.Up(map.boxes, zombies, boss1);
                     if (keyboardState.IsKeyDown(Keys.S))
-                        player.Down(map.boxes, zombies);
+                        player.Down(map.boxes, zombies, boss1);
                     if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed)
                         bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
@@ -137,7 +138,7 @@ namespace GameUlearn
                     scores += deadZombie.Count * 50;
 
                     for (var i = bullets.Count - 1; i >= 0; i--)
-                        if (bullets[i].IsNeedToDelete(map.boxes, zombies))
+                        if (bullets[i].IsNeedToDelete(map.boxes, zombies, player))
                             bullets.RemoveAt(i);
 
                     if (deadZombie.Count != 0)
@@ -148,19 +149,18 @@ namespace GameUlearn
                     }
 
                     player.ChagneRotation();
-                    player.UpdateRectangle();
+                    //player.UpdateRectangle();
 
                     if (player.Healthy <= 0)
                         StartNewGame();
 
 
                     // логика босса поменять время с 30 сек на 2 минуты в конце
-                    if ((int)totalTime >= 1800)
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= 1800d)
                     {
-                        boss1.Update((int)totalTime, player, map, zombies);
                         boss1.Move(player);
+                        boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies);
                     }
-                    
                         
 
                     break;
@@ -223,8 +223,8 @@ namespace GameUlearn
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= 18000)
-                        boss1.Draw(_spriteBatch);
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= 1800d)
+                        boss1.Draw(_spriteBatch, player);
 
                     // добавить отдельный класс TimeEvent
                     if (gameTime.TotalGameTime.TotalSeconds <= 10)
