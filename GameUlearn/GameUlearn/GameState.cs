@@ -8,6 +8,7 @@ namespace GameUlearn
     {
         Game,
         Menu,
-        Scores
+        Scores,
+        GameOver
     }
 }

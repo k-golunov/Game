@@ -15,7 +15,7 @@ namespace GameUlearn
         public Vector2 Position;
         public float Rotation;
         public Rectangle Rectangle;
-        public int Healthy = 100;
+        public int Healthy = 10;
         public SpriteFont HealthbarFont;
         public double TotalTime;
         public double prevTime;

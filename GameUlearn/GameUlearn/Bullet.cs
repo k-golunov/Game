@@ -33,6 +33,11 @@ namespace GameUlearn
             spriteBatch.Draw(Image, rectangle, null,Color.White, Direction, new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
         }
 
+        public bool IsNeedToDelete(List<Box> boxes, List<Zombie> zombies, Player player, BossLevel1 boss1)
+        {
+            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes, zombies, player, boss1);
+        }
+
         public bool IsNeedToDelete(List<Box> boxes, List<Zombie> zombies, Player player)
         {
             return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes, zombies, player);
@@ -40,6 +45,8 @@ namespace GameUlearn
 
         private bool Intersected(List<Box> boxes, List<Zombie> zombies, Player player)
         {
+/*            if (zombies.Count == 0)
+                return false;*/
             foreach (var zombie in zombies)
             {
                 if (rectangle.Intersects(zombie.Rectangle))
@@ -57,8 +64,36 @@ namespace GameUlearn
                 player.Healthy -= 20;
                 return true;
             }
-                
+
             return false;
+        }
+        private bool Intersected(List<Box> boxes, List<Zombie> zombies, Player player, BossLevel1 boss1)
+        {
+            
+/*            if (zombies.Count == 0)
+                return false;
+            foreach (var zombie in zombies)
+            {
+                if (rectangle.Intersects(zombie.Rectangle))
+                    return true;
+            }
+
+            foreach (var box in boxes)
+            {
+                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
+                    return true;
+            }
+
+            if (rectangle.Intersects(player.Rectangle))
+            {
+                player.Healthy -= 20;
+                return true;
+            }*/
+
+            if (rectangle.Intersects(boss1.HitBox))
+                return true;
+            return Intersected(boxes, zombies, player);
+            //return false;
             
         }
 

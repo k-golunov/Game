@@ -84,6 +84,7 @@ namespace GameUlearn
             map.Image[4] = Content.Load<Texture2D>("walls1");
             map.Image[0] = Content.Load<Texture2D>("grass");
             player.HealthbarFont = Content.Load<SpriteFont>("Arial");
+            boss1.HealthbarFont = Content.Load<SpriteFont>("Arial"); ;
             simpleZombieImg = Content.Load<Texture2D>("zoimbie1_hold");
             mainFont = Content.Load<SpriteFont>("Arial");
             boss1.Image = Content.Load<Texture2D>("boss");
@@ -138,8 +139,14 @@ namespace GameUlearn
                     scores += deadZombie.Count * 50;
 
                     for (var i = bullets.Count - 1; i >= 0; i--)
-                        if (bullets[i].IsNeedToDelete(map.boxes, zombies, player))
-                            bullets.RemoveAt(i);
+                        if (bullets[i].IsNeedToDelete(map.boxes, zombies, player, boss1))
+                        {
+                            if (boss1.IntersetsWithBullet(bullets))
+                                boss1.Healthy -= 10;
+                                bullets.RemoveAt(i);
+                            
+                        }
+                            
 
                     if (deadZombie.Count != 0)
                     {
@@ -152,14 +159,22 @@ namespace GameUlearn
                     //player.UpdateRectangle();
 
                     if (player.Healthy <= 0)
-                        StartNewGame();
+                        gameState = GameState.GameOver;
 
 
                     // логика босса поменять время с 30 сек на 2 минуты в конце
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= 1800d)
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= 1800000d && boss1.Alive)
                     {
                         boss1.Move(player);
-                        boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies);
+                        boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies, boss1);
+                        if (boss1.IntersetsWithBullet(bullets))
+                            boss1.Healthy -= 10;
+                        if (boss1.Healthy <= 0)
+                        {
+                            scores += 10000;
+                            boss1.Alive = false;
+                        }
+                            
                     }
                         
 
@@ -180,7 +195,6 @@ namespace GameUlearn
                                 break;
 
                             case MenuOptions.Scores:
-                                // добавить отдельное окно игры с очками
                                 gameState = GameState.Scores;
                                 break;
 
@@ -196,6 +210,19 @@ namespace GameUlearn
 
                 case (GameState.Scores):
                     // добавить словарь с временем и очками игрока, можно запариться и добавить введение ника игрока
+
+                    break;
+
+                case (GameState.GameOver):
+                    if (player.Healthy <= 0)
+                    {
+                        if (keyboardState.IsKeyDown(Keys.Enter) && prevKeyboardState.IsKeyUp(Keys.Enter))
+                        {
+                            gameState = GameState.Menu;
+                            StartNewGame();
+                        }
+                    }
+                        
 
                     break;
                 
@@ -223,13 +250,28 @@ namespace GameUlearn
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= 1800d)
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= 180000d && boss1.Alive)
                         boss1.Draw(_spriteBatch, player);
 
-                    // добавить отдельный класс TimeEvent
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= /*1800*/ 180000 && gameTime.TotalGameTime.TotalMilliseconds <= /*6500 */190000)
+                    {
+                        _spriteBatch.DrawString(mainFont, "ВНИМАНИЕ! Появился босс! Босс бросается камнями.", 
+                            new Vector2(650,900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                        _spriteBatch.DrawString(mainFont, "Он часто промахивается, но если попадет, то вы потеряете очень много здоровья",
+                            new Vector2(650, 950), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                    }
+
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= /*6500 */190000 && gameTime.TotalGameTime.TotalMilliseconds <= 200000)
+                    {
+                        _spriteBatch.DrawString(mainFont, "Ваша задача уничтожить босса, у него 1000 здоровья!",
+                            new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                    }
+
+
+                    // добавить отдельный класс TimeEvent (под вопросом)
                     if (gameTime.TotalGameTime.TotalSeconds <= 10)
                     {
-                        _spriteBatch.DrawString(mainFont, "Для перемещения используйте WASD", 
+                        _spriteBatch.DrawString(mainFont, "Для перемещения используйте WASD",
                             new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                         _spriteBatch.DrawString(mainFont, "Чтобы стрелять нажмите ЛКМ",
                             new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -242,7 +284,7 @@ namespace GameUlearn
                         _spriteBatch.DrawString(mainFont, "Удачи! GL HF",
                             new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                     }
-                       
+
 
                     break;
 
@@ -274,6 +316,11 @@ namespace GameUlearn
                         _spriteBatch.DrawString(mainFont, timeAndScores[key].ToString(), new Vector2(700, (float)y), Color.White);
                     }    
 
+                    break;
+
+                case (GameState.GameOver):
+                    _spriteBatch.DrawString(mainFont, "К сожалению, вы проиграли.", new Vector2((int)(1980 * 0.35), (int)(1080 * 0.1)), Color.White);
+                    _spriteBatch.DrawString(mainFont, "Нажмите Enter чтобы выйти в меню", new Vector2((int)(1980 * 0.35), (int)(1080 * 0.2)), Color.White);
                     break;
             }
             _spriteBatch.End();

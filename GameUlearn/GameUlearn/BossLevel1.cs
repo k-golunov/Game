@@ -14,11 +14,13 @@ namespace GameUlearn
         
         private float speed = 0.1f;
         public Texture2D BulletImg;
-        public int Healthy = 1000;
+        public int Healthy = 10; // change on 1000
         public Vector2 Position;
         public float Rotation;
         public Rectangle HitBox;
         public Texture2D Image;
+        public SpriteFont HealthbarFont;
+        public bool Alive = true;
 
         public BossLevel1()
         {
@@ -30,8 +32,8 @@ namespace GameUlearn
 
         public void SetSizeHitBox()
         {
-            HitBox.Width = Image.Width;
-            HitBox.Height = Image.Height;
+            HitBox.Width = Image.Width * 2;
+            HitBox.Height = Image.Height * 2;
         }
 
         public void SetPosition()
@@ -39,7 +41,7 @@ namespace GameUlearn
 
         }
 
-        public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies)
+        public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies, BossLevel1 boss1)
         {
             HitBox.X = (int)Position.X;
             HitBox.Y = (int)Position.Y;
@@ -55,7 +57,10 @@ namespace GameUlearn
             // нужна другая проверка для босса, чтобы игроку наносился урон
             for (var i = bullets.Count - 1; i >= 0; i--)
                 if (bullets[i].IsNeedToDelete(map.boxes, zombies, player))
+                {
                     bullets.RemoveAt(i);
+                }
+                    
             ChagneRotation(player);
         }
 
@@ -117,6 +122,17 @@ namespace GameUlearn
             return false;
         }
 
+        public bool IntersetsWithBullet(List<Bullet> bullets)
+        {
+            foreach (var bullet in bullets)
+            {
+                if (HitBox.Intersects(bullet.GetRectangle()))
+                    return true;
+            }
+
+            return false;
+        }
+
         public void Draw(SpriteBatch spriteBatch, Player player)
         {
             foreach (var bullet in bullets)
@@ -128,6 +144,8 @@ namespace GameUlearn
 
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 2f, SpriteEffects.None, 1f);
+            spriteBatch.DrawString(HealthbarFont, $"Босс: {Healthy} / 1000",
+                            new Vector2(550, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
         }
 
     }
