@@ -71,7 +71,7 @@ namespace GameUlearn
 
         protected override void Initialize()
         {
-            player = new Player();
+            player = new Player(new Vector2(1000,1000)); 
             boss1 = new BossLevel1();
             base.Initialize();
         }
@@ -90,6 +90,7 @@ namespace GameUlearn
             boss1.Image = Content.Load<Texture2D>("boss");
             boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
             boss1.SetSizeHitBox();
+            player.SetSizeHitBox();
             map.GenerateMap();
         }
 
@@ -131,7 +132,7 @@ namespace GameUlearn
                     foreach (var zombie in zombies)
                     {
                         zombie.ChagneRotation(player);
-                        zombie.Move(player);
+                        zombie.Move(player, map.boxes);
                         if (zombie.IntersetsWithBullet(bullets))
                             deadZombie.Add(zombie);
                     }
@@ -139,7 +140,7 @@ namespace GameUlearn
                     scores += deadZombie.Count * 50;
 
                     for (var i = bullets.Count - 1; i >= 0; i--)
-                        if (bullets[i].IsNeedToDelete(map.boxes, zombies, player, boss1))
+                        if (bullets[i].IsNeedToDelete(map.boxes, zombies, boss1))
                         {
                             if (boss1.IntersetsWithBullet(bullets))
                                 boss1.Healthy -= 10;
@@ -163,7 +164,7 @@ namespace GameUlearn
 
 
                     // логика босса поменять время с 30 сек на 2 минуты в конце
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= 1800000d && boss1.Alive)
+                    if (gameTime.TotalGameTime.TotalMilliseconds >= 180000d && boss1.Alive)
                     {
                         boss1.Move(player);
                         boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies, boss1);

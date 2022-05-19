@@ -14,7 +14,7 @@ namespace GameUlearn
         
         private float speed = 0.1f;
         public Texture2D BulletImg;
-        public int Healthy = 10; // change on 1000
+        public int Healthy = 1000; // change on 1000
         public Vector2 Position;
         public float Rotation;
         public Rectangle HitBox;
