@@ -25,7 +25,6 @@ namespace GameUlearn
     public class Player : Entity
     {
         public float speed = 5f;
-        
 
         public Player() { }
         public Player(Vector2 position)
@@ -40,86 +39,47 @@ namespace GameUlearn
 
         public void Up(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
         {
-/*
-            if (Intersected(boxes, new Rectangle(Rectangle.X, Rectangle.Y + 2 * (int)speed, Image.Width / 2, Image.Height / 2), zombies, boss1)) return;
-            if (Position.Y > 20)
-                Position.Y -= speed;
-            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;*/
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
-            if (Position.Y > 20 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.W)) Position.Y -= speed;
-            //if (Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.W)
-                //Position.Y += 2 * speed;
-
-            //Rectangle.X = (int)Position.X;
-            //Rectangle.Y = (int)Position.Y;
-            LastKeyToMove = Keys.W;
+            if (Position.Y > 20 && !(Intersected(boxes, Rectangle, zombies, boss1) && (LastKeyToMove == Keys.A || LastKeyToMove == Keys.D || LastKeyToMove == Keys.W)))
+            {
+                Position.Y -= speed;
+                LastKeyToMove = Keys.W;
+            }
         }
 
         public void Down(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
         {           
-
-/*            if (Intersected(boxes, new Rectangle(Rectangle.X, Rectangle.Y - 2 * (int)speed, Image.Width / 2, Image.Height / 2), zombies, boss1)) return;
-            if (Position.Y < 1030)
-                Position.Y += speed;
-            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;*/
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
-            if (Position.Y < 1030 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.S)) Position.Y += speed;
-            //if (Intersected(boxes, Rectangle, zombies, boss1)) 
-            //    Position.Y -= 2 * speed;
-
-            //Rectangle.X = (int)Position.X;
-            //Rectangle.Y = (int)Position.Y;
-            LastKeyToMove = Keys.S;
+            if (Position.Y < 1030 && !(Intersected(boxes, Rectangle, zombies, boss1) && (LastKeyToMove == Keys.D || LastKeyToMove == Keys.A || LastKeyToMove == Keys.S)))
+            {
+                Position.Y += speed;
+                LastKeyToMove = Keys.S;
+            } 
         }
 
         public void Left(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
         { 
-/*
-            if (Intersected(boxes, new Rectangle(Rectangle.X + 2 * (int)speed, Rectangle.Y, Image.Width / 2, Image.Height / 2), zombies, boss1)) return;
-            if (Position.X > 20)
-                Position.X -= speed;
-            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;*/
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
-            
-            if (Position.X > 20 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.A)) Position.X -= speed;
-            //if (Intersected(boxes, Rectangle, zombies, boss1)) 
-            //    Position.X += 2 * speed;
 
-            //Rectangle.X = (int)Position.X;
-            //Rectangle.Y = (int)Position.Y;
-            LastKeyToMove = Keys.A;
+            if (Position.X > 20 && !(Intersected(boxes, Rectangle, zombies, boss1) && (LastKeyToMove == Keys.W || LastKeyToMove == Keys.S || LastKeyToMove == Keys.A)))
+            {
+                Position.X -= speed;
+                LastKeyToMove = Keys.A;
+            }
         }
 
         public void Right(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
         {
-/*
-            if (Intersected(boxes, new Rectangle(Rectangle.X - 2 * (int)speed, Rectangle.Y, Image.Width / 2, Image.Height / 2), zombies, boss1)) return;
-            if (Position.X < 1900)
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
+            if (Position.X < 1900 && !(Intersected(boxes, Rectangle, zombies, boss1) && (LastKeyToMove == Keys.W || LastKeyToMove == Keys.S || LastKeyToMove == Keys.D)))
+            {
                 Position.X += speed;
-            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;*/
-            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;
-            if (Position.X < 1900 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.D)) Position.X += speed;
-            //if (Intersected(boxes, Rectangle, zombies, boss1))
-            //Position.X -= 2 * speed;
-
-            //Rectangle.X = (int)Position.X;
-            //Rectangle.Y = (int)Position.Y;
-            LastKeyToMove = Keys.D;
-        }
-
-        // потом вставить изменения в методы перемещения (под вопросом)
-        public void UpdateRectangle()
-        {
-            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;
+                LastKeyToMove = Keys.D;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -152,13 +112,10 @@ namespace GameUlearn
 
         private bool IntersetsWithZombie(Rectangle rectangle, List<Zombie> zombies)
         {
-            //var prevTime = -1.0;
             foreach (var zombie in zombies)
             {
                 if (rectangle.Intersects(zombie.Rectangle))
                 {
-                    // урон проходит, но зомби всегда должен пытаться двигаться на игрока
-                    // чтобы исправить, надо вызывать метод не только при движении, или наносить урон другим методом, вызывая его постоянно
                     if (TotalTime - prevTime >= 2000)
                     {
                         Damage();
@@ -181,7 +138,7 @@ namespace GameUlearn
             Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
         }
 
-        public void Damage(/*Object source, ElapsedEventArgs e*/)
+        public void Damage()
         {
                 Healthy -= 10;
         }
@@ -190,6 +147,7 @@ namespace GameUlearn
     public class Zombie : Entity
     {
         private float speed = 0.5f;
+        private string LastMoveDirection = "none";
 
         public Zombie() { }
 
@@ -204,7 +162,6 @@ namespace GameUlearn
 
         public void Move(Player player, List<Box> boxes)
         {
-            //if (Intersected(player, boxes)) return;
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
             FindWayToPlayer(player, boxes);
@@ -214,51 +171,38 @@ namespace GameUlearn
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
-            if (Math.Sqrt(a * a + b * b) < 400)
+            if (Math.Sqrt(a * a + b * b) < 500)
             {
-                //if (Intersected(player, boxes)) return; 
                 if (player.Position.X >= Position.X && player.Position.Y >= Position.Y)
                 {
+                    if (Intersected(player, boxes) && LastMoveDirection == "DownRight") return;
                     Position.X += speed;
                     Position.Y += speed;
-/*                    if (Intersected(player, boxes)) return;
-                    {
-                        Position.X -= speed;
-                        Position.Y -= speed;
-                    }*/
+                    LastMoveDirection = "DownRight";
                 }
 
                 else if (player.Position.X < Position.X && player.Position.Y < Position.Y)
                 {
+                    if (Intersected(player, boxes) && LastMoveDirection == "UpLeft") return;
                     Position.X -= speed;
                     Position.Y -= speed;
-/*                    if (Intersected(player, boxes)) return;
-                    {
-                        Position.X += speed;
-                        Position.Y += speed;
-                    }*/
+                    LastMoveDirection = "UpLeft";
                 }
 
                 else if (player.Position.X < Position.X && player.Position.Y >= Position.Y)
                 {
+                    if (Intersected(player, boxes) && LastMoveDirection == "DownLeft") return;
                     Position.X -= speed;
                     Position.Y += speed;
-/*                    if (Intersected(player, boxes)) return;
-                    {
-                        Position.X += speed;
-                        Position.Y -= speed;
-                    }*/
+                    LastMoveDirection = "DownLeft";
                 }
 
                 else
                 {
+                    if (Intersected(player, boxes) && LastMoveDirection == "UpRight") return;
                     Position.X += speed;
                     Position.Y -= speed;
-/*                    if (Intersected(player, boxes)) return;
-                    {
-                        Position.X -= speed;
-                        Position.Y += speed;
-                    }*/
+                    LastMoveDirection = "UpRight";
                 }
             }
 
@@ -308,6 +252,12 @@ namespace GameUlearn
         {
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f);
+        }
+
+        public void RaiseSpeed()
+        {
+            if (speed <= 5f)
+                speed += 0.01f;
         }
 
     }

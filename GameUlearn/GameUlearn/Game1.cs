@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -13,25 +14,31 @@ namespace GameUlearn
         private static Player player;
         private Texture2D BulletImg;
         Texture2D simpleZombieImg;
-        List<Bullet> bullets = new List<Bullet>();
-        private Map map = new Map();
+        readonly List<Bullet> bullets = new List<Bullet>();
+        private readonly Map map = new Map();
         MouseState previousMouse;
         KeyboardState prevKeyboardState;
-        List<Zombie> zombies = new List<Zombie>();
+        readonly List<Zombie> zombies = new List<Zombie>();
         SpriteFont mainFont;
         GameState gameState = GameState.Menu;
         MenuOptions option = MenuOptions.Play;
         int optionCounter = 1;
-        string gameTitle = "2Д Шутер";
-        string gamePlay = "Играть";
-        string gameScores = "Очки";
-        string gameExit = "Выход";
-        List<Zombie> deadZombie = new List<Zombie>();
+        readonly string gameTitle = "2Д Шутер";
+        readonly string gamePlay = "Играть";
+        readonly string gameScores = "Очки";
+        readonly string gameExit = "Выход";
+        readonly List<Zombie> deadZombie = new List<Zombie>();
         int scores = 0;
-        Dictionary<DateTime, int> timeAndScores = new Dictionary<DateTime, int>();
-        BossLevel1 boss1;
+        readonly Dictionary<DateTime, int> timeAndScores = new Dictionary<DateTime, int>();
+        private BossLevel1 boss1;
+        readonly List<HeartBonus> heartBonuses = new List<HeartBonus>();
+        private Texture2D heartImg;
+        private SoundEffect music;
+        private SoundEffectInstance menuSound;
+        private bool musicStart = false;
 
-        int OptionsCounter
+
+        private int OptionsCounter
         {
             get
             {
@@ -93,8 +100,11 @@ namespace GameUlearn
             mainFont = Content.Load<SpriteFont>("Arial");
             boss1.Image = Content.Load<Texture2D>("boss");
             boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
+            heartImg = Content.Load<Texture2D>("heart2");
+            music = Content.Load<SoundEffect>("menuSound");
             boss1.SetSizeHitBox();
             player.SetSizeHitBox();
+            menuSound = music.CreateInstance();
             map.GenerateMap();
         }
 
@@ -116,6 +126,11 @@ namespace GameUlearn
             switch (gameState)
             {
                 case (GameState.Game):
+                    if (musicStart == true)
+                    {
+                        menuSound.Stop(true);
+                        musicStart = false;
+                    }
                     player.TotalTime = totalTime;
                     if (keyboardState.IsKeyDown(Keys.A))
                         player.Left(map.boxes, zombies, boss1);
@@ -135,13 +150,20 @@ namespace GameUlearn
                         zombies.Add(new Zombie(simpleZombieImg));
                     foreach (var zombie in zombies)
                     {
+                        if ((int)totalTime % 2000 == 0)
+                            zombie.RaiseSpeed();
                         zombie.ChagneRotation(player);
                         zombie.Move(player, map.boxes);
                         if (zombie.IntersetsWithBullet(bullets))
                             deadZombie.Add(zombie);
                     }
 
-                    
+                    if ((int)totalTime % 15000 == 0) // change on 15000
+                        heartBonuses.Add(new HeartBonus(heartImg));
+
+                    for (var i = heartBonuses.Count - 1; i >= 0; i--)
+                        if (heartBonuses[i].Intersets(player))
+                            heartBonuses.RemoveAt(i);
 
                     scores += deadZombie.Count * 50;
 
@@ -153,6 +175,7 @@ namespace GameUlearn
                                 bullets.RemoveAt(i);
                             
                         }
+
 
 /*                    foreach (var box in map.boxes)
                     {
@@ -181,7 +204,7 @@ namespace GameUlearn
                     if (scores >= 2000 && boss1.Alive)
                     {
                         boss1.Move(player);
-                        boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies, boss1);
+                        boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies);
                         if (boss1.IntersetsWithBullet(bullets))
                             boss1.Healthy -= 10;
                         if (boss1.Healthy <= 0)
@@ -196,6 +219,12 @@ namespace GameUlearn
                     break;
 
                 case (GameState.Menu):
+                    if (musicStart == false)
+                    {
+                        menuSound.Play();
+                        musicStart = true;
+                    }
+
                     if (keyboardState.IsKeyDown(Keys.Up) && prevKeyboardState.IsKeyUp(Keys.Up))
                         OptionsCounter--;
                     if (keyboardState.IsKeyDown(Keys.Down) && prevKeyboardState.IsKeyUp(Keys.Down))
@@ -238,7 +267,6 @@ namespace GameUlearn
                         }
                     }
                         
-
                     break;
                 
             }
@@ -266,7 +294,7 @@ namespace GameUlearn
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
                     if (scores >= 3000 && boss1.Alive)
-                        boss1.Draw(_spriteBatch, player);
+                        boss1.Draw(_spriteBatch);
 
                     if (scores >= 3000 && scores <= 3200)
                     {
@@ -282,8 +310,9 @@ namespace GameUlearn
                             new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                     }
 
+                    foreach (var heartBonus in heartBonuses)
+                        heartBonus.Draw(_spriteBatch);
 
-                    // добавить отдельный класс TimeEvent (под вопросом)
                     if (scores <= 70)
                     {
                         _spriteBatch.DrawString(mainFont, "Для перемещения используйте WASD",
@@ -328,7 +357,7 @@ namespace GameUlearn
                     foreach (var key in timeAndScores.Keys)
                     {
                         _spriteBatch.DrawString(mainFont, key.ToString(), new Vector2(400, (float)y), Color.White);
-                        _spriteBatch.DrawString(mainFont, timeAndScores[key].ToString(), new Vector2(700, (float)y), Color.White);
+                        _spriteBatch.DrawString(mainFont, timeAndScores[key].ToString(), new Vector2(900, (float)y), Color.White);
                     }    
 
                     break;
@@ -356,6 +385,7 @@ namespace GameUlearn
             scores = 0;
             boss1.Alive = true;
             boss1.Healthy = 1000;
+            heartBonuses.Clear();
             // обнулять gametime
             // в методе нужно обнулять все значения
         }

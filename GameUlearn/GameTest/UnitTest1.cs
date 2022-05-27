@@ -14,11 +14,11 @@ namespace GameTest
     {
         private Texture2D BulletImg;
         Texture2D simpleZombieImg;
-        Map map = new Map();
-        Player player = new Player();
+        readonly Map map = new();
+        Player player = new();
         private SpriteBatch _spriteBatch;
         private GraphicsDeviceManager _graphics;
-        BossLevel1 boss1 = new BossLevel1();
+        readonly BossLevel1 boss1 = new();
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -29,7 +29,6 @@ namespace GameTest
             player.HealthbarFont = Content.Load<SpriteFont>("Arial");
             boss1.HealthbarFont = Content.Load<SpriteFont>("Arial"); ;
             simpleZombieImg = Content.Load<Texture2D>("zoimbie1_hold");
-            //mainFont = Content.Load<SpriteFont>("Arial");
             boss1.Image = Content.Load<Texture2D>("boss");
             boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
             boss1.SetSizeHitBox();
@@ -53,7 +52,7 @@ namespace GameTest
             player = new Player();
             base.Initialize();
         }
-         // добавить в тесты босса
+
         [TestMethod]
         public void TestMovePlayer()
         {
@@ -70,12 +69,10 @@ namespace GameTest
             player.Left(map.boxes, zombies, boss1);
             Assert.AreEqual(player.Position.X, 5f); // игрок вообще не должен попадать на координаты 0 0, поэтому он не двигается
             Assert.AreEqual(player.Position.Y, 0);
-            player.Position.X = 50;
-            player.Position.Y = 50;
+            player.Position.X = 100;
+            player.Position.Y = 100;
             player.Down(map.boxes, zombies, boss1);
-            Assert.AreEqual(player.Position.Y, 45f);
-            player.Up(map.boxes, zombies, boss1);
-            Assert.AreEqual(player.Position.Y, 50f);
+            Assert.AreEqual(player.Position.Y, 105f);
         }
 
         [TestMethod]
@@ -83,7 +80,7 @@ namespace GameTest
         {
             _graphics.ApplyChanges();
             Initialize();
-            Assert.AreEqual(map.boxes.Count, 480);
+            Assert.AreEqual(map.boxes.Count, 510);
         }
 
         [TestMethod]
@@ -121,10 +118,14 @@ namespace GameTest
         {
             _graphics.ApplyChanges();
             Initialize();
-            var bullets = new List<Bullet>();
-            bullets.Add(new Bullet(BulletImg, 0f, new Vector2(50, 50)));
-            var zombies = new List<Zombie>();
-            zombies.Add(new Zombie(simpleZombieImg));
+            var bullets = new List<Bullet>
+            {
+                new Bullet(BulletImg, 0f, new Vector2(50, 50))
+            };
+            var zombies = new List<Zombie>
+            {
+                new Zombie(simpleZombieImg)
+            };
             zombies[0].Position.X = 100;
             zombies[0].Position.Y = 50;
             zombies[0].Rectangle.X = 100;
@@ -158,14 +159,17 @@ namespace GameTest
         {
             _graphics.ApplyChanges();
             Initialize();
-            var zombies = new List<Zombie>();
-            zombies.Add(new Zombie(simpleZombieImg));
+            var zombies = new List<Zombie>
+            {
+                new Zombie(simpleZombieImg)
+            };
             zombies[0].Position.X = 50;
             zombies[0].Position.Y = 50;
-            player.Position.X = 50.5f;
+            player.Position.X = 20.5f;
             player.Position.Y = 50.0f;
-            player.Left(map.boxes, zombies, boss1);
-            Assert.AreEqual(player.Position.X, 55.5f); // игрока откинуло с хитбокса зомби
+            player.Right(map.boxes, zombies, boss1);
+            player.Right(map.boxes, zombies, boss1);
+            Assert.AreEqual(player.Position.X, 25.5f); // если бы не пересекся, позиция была бы 30ю5
         }
 
         [TestMethod]

@@ -8,13 +8,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    public class BossLevel1 // надо убирать наследование и переписывать с нуля, иначе методы не работают
+    public class BossLevel1 
     {
         public List<Bullet> bullets = new List<Bullet>();
         
-        private float speed = 0.1f;
+        private readonly float speed = 0.5f;
         public Texture2D BulletImg;
-        public int Healthy = 1000; // change on 1000
+        public int Healthy = 1000;
         public Vector2 Position;
         public float Rotation;
         public Rectangle HitBox;
@@ -41,7 +41,7 @@ namespace GameUlearn
 
         }
 
-        public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies, BossLevel1 boss1)
+        public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies)
         {
             HitBox.X = (int)Position.X;
             HitBox.Y = (int)Position.Y;
@@ -133,20 +133,18 @@ namespace GameUlearn
             return false;
         }
 
-        public void Draw(SpriteBatch spriteBatch, Player player)
+        public void Draw(SpriteBatch spriteBatch)
         {
             foreach (var bullet in bullets)
-            {
                 bullet.Draw(spriteBatch);
-/*                if (player.Rectangle.Intersects(bullet.GetRectangle()))
-                    player.Healthy -= 20;*/
-            }
+            
 
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 2f, SpriteEffects.None, 1f);
             spriteBatch.DrawString(HealthbarFont, $"Босс: {Healthy} / 1000",
                             new Vector2(550, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
         }
+
 
     }
 }
