@@ -82,6 +82,10 @@ namespace GameUlearn
             player.Image = Content.Load<Texture2D>("soldier1_gun");
             BulletImg = Content.Load<Texture2D>("weapon_gun");
             map.Image[4] = Content.Load<Texture2D>("walls1");
+            map.Image[1] = Content.Load<Texture2D>("road_left");
+            map.Image[2] = Content.Load<Texture2D>("road_centre");
+            map.Image[3] = Content.Load<Texture2D>("road_right");
+            map.Image[5] = Content.Load<Texture2D>("grunt");
             map.Image[0] = Content.Load<Texture2D>("grass");
             player.HealthbarFont = Content.Load<SpriteFont>("Arial");
             boss1.HealthbarFont = Content.Load<SpriteFont>("Arial"); ;
@@ -127,7 +131,7 @@ namespace GameUlearn
                     if ((int)totalTime % 1000 == 0)
                         scores += 10;
 
-                    if ((int)totalTime % 10000 == 0)
+                    if ((int)totalTime % 5000 == 0)
                         zombies.Add(new Zombie(simpleZombieImg));
                     foreach (var zombie in zombies)
                     {
@@ -136,6 +140,8 @@ namespace GameUlearn
                         if (zombie.IntersetsWithBullet(bullets))
                             deadZombie.Add(zombie);
                     }
+
+                    
 
                     scores += deadZombie.Count * 50;
 
@@ -147,6 +153,14 @@ namespace GameUlearn
                                 bullets.RemoveAt(i);
                             
                         }
+
+/*                    foreach (var box in map.boxes)
+                    {
+                        if (player.Rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 5)
+                            player.speed = 1f;
+                        else 
+                            player.speed = 5f;
+                    }*/
                             
 
                     if (deadZombie.Count != 0)
@@ -164,7 +178,7 @@ namespace GameUlearn
 
 
                     // логика босса поменять время с 30 сек на 2 минуты в конце
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= 180000d && boss1.Alive)
+                    if (scores >= 2000 && boss1.Alive)
                     {
                         boss1.Move(player);
                         boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies, boss1);
@@ -251,10 +265,10 @@ namespace GameUlearn
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= 180000d && boss1.Alive)
+                    if (scores >= 3000 && boss1.Alive)
                         boss1.Draw(_spriteBatch, player);
 
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= /*1800*/ 180000 && gameTime.TotalGameTime.TotalMilliseconds <= /*6500 */190000)
+                    if (scores >= 3000 && scores <= 3200)
                     {
                         _spriteBatch.DrawString(mainFont, "ВНИМАНИЕ! Появился босс! Босс бросается камнями.", 
                             new Vector2(650,900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -262,7 +276,7 @@ namespace GameUlearn
                             new Vector2(650, 950), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                     }
 
-                    if (gameTime.TotalGameTime.TotalMilliseconds >= /*6500 */190000 && gameTime.TotalGameTime.TotalMilliseconds <= 200000)
+                    if (scores >= 3200 && scores <= 3400)
                     {
                         _spriteBatch.DrawString(mainFont, "Ваша задача уничтожить босса, у него 1000 здоровья!",
                             new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -270,7 +284,7 @@ namespace GameUlearn
 
 
                     // добавить отдельный класс TimeEvent (под вопросом)
-                    if (gameTime.TotalGameTime.TotalSeconds <= 10)
+                    if (scores <= 70)
                     {
                         _spriteBatch.DrawString(mainFont, "Для перемещения используйте WASD",
                             new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -278,7 +292,7 @@ namespace GameUlearn
                             new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                     }
 
-                    else if (gameTime.TotalGameTime.TotalSeconds <= 18 && gameTime.TotalGameTime.TotalSeconds > 8)
+                    else if (scores >= 70 && scores <= 150)
                     {
                         _spriteBatch.DrawString(mainFont, "Цель игры - не погибнуть от зомби и прожить как можно дольше",
                             new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -340,6 +354,9 @@ namespace GameUlearn
             zombies.Clear();
             player.Healthy = 100;
             scores = 0;
+            boss1.Alive = true;
+            boss1.Healthy = 1000;
+            // обнулять gametime
             // в методе нужно обнулять все значения
         }
     }

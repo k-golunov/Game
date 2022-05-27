@@ -24,7 +24,7 @@ namespace GameUlearn
 
     public class Player : Entity
     {
-        readonly float speed = 5f;
+        public float speed = 5f;
         
 
         public Player() { }
@@ -48,9 +48,9 @@ namespace GameUlearn
             Rectangle.Y = (int)Position.Y;*/
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
-            if (Position.Y > 20) Position.Y -= speed;
-            if (Intersected(boxes, Rectangle, zombies, boss1))
-                Position.Y += 2 * speed;
+            if (Position.Y > 20 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.W)) Position.Y -= speed;
+            //if (Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.W)
+                //Position.Y += 2 * speed;
 
             //Rectangle.X = (int)Position.X;
             //Rectangle.Y = (int)Position.Y;
@@ -67,9 +67,9 @@ namespace GameUlearn
             Rectangle.Y = (int)Position.Y;*/
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
-            if (Position.Y < 1030) Position.Y += speed;
-            if (Intersected(boxes, Rectangle, zombies, boss1)) 
-                Position.Y -= 2 * speed;
+            if (Position.Y < 1030 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.S)) Position.Y += speed;
+            //if (Intersected(boxes, Rectangle, zombies, boss1)) 
+            //    Position.Y -= 2 * speed;
 
             //Rectangle.X = (int)Position.X;
             //Rectangle.Y = (int)Position.Y;
@@ -87,9 +87,9 @@ namespace GameUlearn
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
             
-            if (Position.X > 20) Position.X -= speed;
-            if (Intersected(boxes, Rectangle, zombies, boss1)) 
-                Position.X += 2 * speed;
+            if (Position.X > 20 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.A)) Position.X -= speed;
+            //if (Intersected(boxes, Rectangle, zombies, boss1)) 
+            //    Position.X += 2 * speed;
 
             //Rectangle.X = (int)Position.X;
             //Rectangle.Y = (int)Position.Y;
@@ -106,9 +106,9 @@ namespace GameUlearn
             Rectangle.Y = (int)Position.Y;*/
             Rectangle.X = (int)Position.X;
             Rectangle.Y = (int)Position.Y;
-            if (Position.X < 1900) Position.X += speed;
-            if (Intersected(boxes, Rectangle, zombies, boss1))
-                Position.X -= 2 * speed;
+            if (Position.X < 1900 && !(Intersected(boxes, Rectangle, zombies, boss1) && LastKeyToMove == Keys.D)) Position.X += speed;
+            //if (Intersected(boxes, Rectangle, zombies, boss1))
+            //Position.X -= 2 * speed;
 
             //Rectangle.X = (int)Position.X;
             //Rectangle.Y = (int)Position.Y;
@@ -129,14 +129,19 @@ namespace GameUlearn
             spriteBatch.DrawString(HealthbarFont, $"Здоровье: {Healthy} / 100", new Vector2(10, 950), Color.Red);
         }
 
-        private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies, BossLevel1 boss1) // try create field rectangle for player or/and entity
+        private bool Intersected(List<Box> boxes, Rectangle rectangle, List<Zombie> zombies, BossLevel1 boss1)
         {
             foreach (var box in boxes)
             {
                 if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
-                    // нужна проверка, находится ли игрок в этом боксе 
                     return true;
 
+                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 5)
+                    speed = 1f;
+                else if (rectangle.Intersects(box.GetRectangle()) && (box.NumberTexture == 1 || box.NumberTexture == 2 || box.NumberTexture == 3))
+                    speed = 10f;
+                else if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 0)
+                    speed = 5f;
             }
 
             if (boss1.HitBox.Intersects(rectangle))
@@ -296,7 +301,7 @@ namespace GameUlearn
             var playerPos = new Vector2(player.Position.X, player.Position.Y);
             var direction = playerPos - Position;
             direction.Normalize();
-            Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
+            Rotation = (float)Math.Atan2(direction.Y, direction.X);
         }
 
         public void Draw(SpriteBatch spriteBatch)
