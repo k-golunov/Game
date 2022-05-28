@@ -171,7 +171,7 @@ namespace GameUlearn
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
-            if (Math.Sqrt(a * a + b * b) < 500)
+            if (Math.Sqrt(a * a + b * b) < 1000)
             {
                 if (player.Position.X >= Position.X && player.Position.Y >= Position.Y)
                 {

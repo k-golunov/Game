@@ -67,11 +67,12 @@ namespace GameUlearn
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            //Window.IsBorderless = true;
             _graphics.IsFullScreen = false;
-            _graphics.PreferredBackBufferWidth = /*1920;*/GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            _graphics.PreferredBackBufferHeight = /*1080;*/GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+            _graphics.PreferredBackBufferWidth = 1920; //GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+            _graphics.PreferredBackBufferHeight = 1080; //GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             //_graphics.ToggleFullScreen();
-            
+
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
         }
@@ -158,7 +159,7 @@ namespace GameUlearn
                             deadZombie.Add(zombie);
                     }
 
-                    if ((int)totalTime % 15000 == 0) // change on 15000
+                    if ((int)totalTime % 30000 == 0) // change on 15000
                         heartBonuses.Add(new HeartBonus(heartImg));
 
                     for (var i = heartBonuses.Count - 1; i >= 0; i--)
@@ -174,17 +175,7 @@ namespace GameUlearn
                                 boss1.Healthy -= 10;
                                 bullets.RemoveAt(i);
                             
-                        }
-
-
-/*                    foreach (var box in map.boxes)
-                    {
-                        if (player.Rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 5)
-                            player.speed = 1f;
-                        else 
-                            player.speed = 5f;
-                    }*/
-                            
+                        }   
 
                     if (deadZombie.Count != 0)
                     {
@@ -194,14 +185,12 @@ namespace GameUlearn
                     }
 
                     player.ChagneRotation();
-                    //player.UpdateRectangle();
 
                     if (player.Healthy <= 0)
                         gameState = GameState.GameOver;
 
 
-                    // логика босса поменять время с 30 сек на 2 минуты в конце
-                    if (scores >= 2000 && boss1.Alive)
+                    if (scores >= 1500 && boss1.Alive)
                     {
                         boss1.Move(player);
                         boss1.Update((int)gameTime.TotalGameTime.TotalMilliseconds, player, map, zombies);
@@ -222,6 +211,7 @@ namespace GameUlearn
                     if (musicStart == false)
                     {
                         menuSound.Play();
+                        menuSound.Volume = 0.05f;
                         musicStart = true;
                     }
 
@@ -254,6 +244,11 @@ namespace GameUlearn
 
                 case (GameState.Scores):
                     // добавить словарь с временем и очками игрока, можно запариться и добавить введение ника игрока
+                    if (musicStart == true)
+                    {
+                        menuSound.Stop(true);
+                        musicStart = false;
+                    }
 
                     break;
 
@@ -293,10 +288,10 @@ namespace GameUlearn
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
-                    if (scores >= 3000 && boss1.Alive)
+                    if (scores >= 1500 && boss1.Alive)
                         boss1.Draw(_spriteBatch);
 
-                    if (scores >= 3000 && scores <= 3200)
+                    if (scores >= 1500 && scores <= 1700)
                     {
                         _spriteBatch.DrawString(mainFont, "ВНИМАНИЕ! Появился босс! Босс бросается камнями.", 
                             new Vector2(650,900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -304,7 +299,7 @@ namespace GameUlearn
                             new Vector2(650, 950), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                     }
 
-                    if (scores >= 3200 && scores <= 3400)
+                    if (scores >= 1700 && scores <= 2000)
                     {
                         _spriteBatch.DrawString(mainFont, "Ваша задача уничтожить босса, у него 1000 здоровья!",
                             new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
