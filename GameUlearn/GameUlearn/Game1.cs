@@ -28,6 +28,9 @@ namespace GameUlearn
         readonly string gameScores = "Очки";
         readonly string gameExit = "Выход";
         readonly List<Zombie> deadZombie = new List<Zombie>();
+        readonly List<SpeedZombie> speedZombies = new List<SpeedZombie>();
+        readonly List<SpeedZombie> deadSpeedZombies = new List<SpeedZombie>();
+        Texture2D speedZombieImg;
         int scores = 0;
         readonly Dictionary<DateTime, int> timeAndScores = new Dictionary<DateTime, int>();
         private BossLevel1 boss1;
@@ -103,6 +106,7 @@ namespace GameUlearn
             boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
             heartImg = Content.Load<Texture2D>("heart2");
             music = Content.Load<SoundEffect>("menuSound");
+            speedZombieImg = Content.Load<Texture2D>("speedZombie");
             boss1.SetSizeHitBox();
             player.SetSizeHitBox();
             menuSound = music.CreateInstance();
@@ -149,6 +153,27 @@ namespace GameUlearn
 
                     if ((int)totalTime % 5000 == 0)
                         zombies.Add(new Zombie(simpleZombieImg));
+
+                    if ((int)totalTime % 15000 == 0)
+                        speedZombies.Add(new SpeedZombie(speedZombieImg));
+
+                    foreach (var zombie in speedZombies)
+                    {
+                        zombie.ChagneRotation(player);
+                        zombie.Move(player, map.boxes);
+                        if (zombie.IntersetsWithBullet(bullets))
+                            deadSpeedZombies.Add(zombie);
+                    }
+
+                    scores += deadSpeedZombies.Count * 100;
+
+                    if (deadSpeedZombies.Count != 0)
+                    {
+                        foreach (var dead in deadSpeedZombies)
+                            speedZombies.Remove(dead);
+                        deadSpeedZombies.Clear();
+                    }
+
                     foreach (var zombie in zombies)
                     {
                         if ((int)totalTime % 2000 == 0)
@@ -285,6 +310,8 @@ namespace GameUlearn
                     foreach (var box in map.boxes)
                         box.Draw(_spriteBatch);
                     foreach (var zombie in zombies)
+                        zombie.Draw(_spriteBatch);
+                    foreach (var zombie in speedZombies)
                         zombie.Draw(_spriteBatch);
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 

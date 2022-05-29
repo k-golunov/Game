@@ -146,7 +146,7 @@ namespace GameUlearn
 
     public class Zombie : Entity
     {
-        private float speed = 0.5f;
+        public float speed { get; set; }
         private string LastMoveDirection = "none";
 
         public Zombie() { }
@@ -158,6 +158,7 @@ namespace GameUlearn
             Rotation = 1f;
             Rectangle.Width = Image.Width;
             Rectangle.Height = Image.Height;
+            speed = 0.5f;
         }
 
         public void Move(Player player, List<Box> boxes)
@@ -260,5 +261,18 @@ namespace GameUlearn
                 speed += 0.01f;
         }
 
+    }
+
+    public class SpeedZombie : Zombie
+    {
+        public SpeedZombie(Texture2D image)
+        {
+            Image = image;
+            SetRandomPosition();
+            Rotation = 1f;
+            Rectangle.Width = Image.Width;
+            Rectangle.Height = Image.Height;
+            speed = 6f;  
+        }
     }
 }
