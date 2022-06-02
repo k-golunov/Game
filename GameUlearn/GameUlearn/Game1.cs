@@ -39,6 +39,7 @@ namespace GameUlearn
         private SoundEffect music;
         private SoundEffectInstance menuSound;
         private bool musicStart = false;
+        private TimeEvent timeEvent = new TimeEvent();
 
 
         private int OptionsCounter
@@ -125,7 +126,6 @@ namespace GameUlearn
                     gameState = GameState.Menu;
                 else
                     gameState = GameState.Game;
-
             }
 
             switch (gameState)
@@ -137,7 +137,6 @@ namespace GameUlearn
                         musicStart = false;
                     }
                     player.TotalTime = totalTime;
-                    //player.SetHitBoxPosition();
                     if (keyboardState.IsKeyDown(Keys.A))
                         player.Left(zombies, boss1, map);
                     if (keyboardState.IsKeyDown(Keys.D))
@@ -150,15 +149,16 @@ namespace GameUlearn
                         bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
                     map.ChangeSpeedOnBox(player);
-                    
-                    if ((int)totalTime % 1000 == 0)
-                        scores += 10;
 
-                    if ((int)totalTime % 5000 == 0)
-                        zombies.Add(new Zombie(simpleZombieImg));
+                    /*                    if ((int)totalTime % 1000 == 0)
+                                            scores += 10;*/
 
-                    if ((int)totalTime % 15000 == 0)
-                        speedZombies.Add(new SpeedZombie(speedZombieImg));
+                    /*                    if ((int)totalTime % 5000 == 0)
+                                            zombies.Add(new Zombie(simpleZombieImg));
+
+                                        if ((int)totalTime % 15000 == 0)
+                                            speedZombies.Add(new SpeedZombie(speedZombieImg));*/
+                    timeEvent.SpawnZombie(zombies, simpleZombieImg, speedZombies, speedZombieImg);
 
                     foreach (var zombie in speedZombies)
                     {
@@ -166,10 +166,21 @@ namespace GameUlearn
                         zombie.Move(player, map);
                         if (zombie.IntersetsWithBullet(bullets))
                             deadSpeedZombies.Add(zombie);
+                    }                   
+                    
+                    foreach (var zombie in zombies)
+                    {
+/*                        if ((int)totalTime % 2000 == 0)
+                            zombie.RaiseSpeed();*/
+                        timeEvent.RaiseSpeedForZombie(zombie);
+                        zombie.ChagneRotation(player);
+                        zombie.Move(player, map);
+                        if (zombie.IntersetsWithBullet(bullets))
+                            deadZombie.Add(zombie);
                     }
-
-                    scores += deadSpeedZombies.Count * 100;
-
+                    timeEvent.TotalTime = (int)totalTime;
+                    /*scores += deadSpeedZombies.Count * 100;*/
+                    scores = timeEvent.AddScore(scores, deadSpeedZombies.Count, deadZombie.Count);
                     if (deadSpeedZombies.Count != 0)
                     {
                         foreach (var dead in deadSpeedZombies)
@@ -177,15 +188,7 @@ namespace GameUlearn
                         deadSpeedZombies.Clear();
                     }
 
-                    foreach (var zombie in zombies)
-                    {
-                        if ((int)totalTime % 2000 == 0)
-                            zombie.RaiseSpeed();
-                        zombie.ChagneRotation(player);
-                        zombie.Move(player, map);
-                        if (zombie.IntersetsWithBullet(bullets))
-                            deadZombie.Add(zombie);
-                    }
+
 
                     if ((int)totalTime % 30000 == 0) // change on 15000
                         heartBonuses.Add(new HeartBonus(heartImg));
@@ -194,8 +197,8 @@ namespace GameUlearn
                         if (heartBonuses[i].Intersets(player))
                             heartBonuses.RemoveAt(i);
 
-                    scores += deadZombie.Count * 50;
-
+                    /*scores += deadZombie.Count * 50;*/
+                    
                     for (var i = bullets.Count - 1; i >= 0; i--)
                         if (bullets[i].IsNeedToDelete(zombies, boss1, map))
                         {

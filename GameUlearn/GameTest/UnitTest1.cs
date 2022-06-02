@@ -217,4 +217,8 @@ namespace GameTest
             Assert.AreEqual(boss1.Alive, false);
         }
     }
+
+    //тест на увеличение скорости зомби
+
+    //
 }
