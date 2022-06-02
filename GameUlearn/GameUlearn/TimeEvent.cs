@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,6 +32,54 @@ namespace GameUlearn
         {
             if (TotalTime % 2000 == 0)
                 zombie.RaiseSpeed();
+        }
+
+        public void AddHeartBonus(List<HeartBonus> heartBonuses, Texture2D heartImg)
+        {
+            if (TotalTime % 30000 == 0) 
+                heartBonuses.Add(new HeartBonus(heartImg));
+        }
+    }
+
+    class TimeDraw
+    {
+        public SpriteBatch SpriteBatch { get; set; }
+        public int Scores { get; set; }
+
+        public void DrawTraining(SpriteFont mainFont)
+        {
+            if (Scores <= 70)
+            {
+                SpriteBatch.DrawString(mainFont, "Для перемещения используйте WASD",
+                    new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                SpriteBatch.DrawString(mainFont, "Чтобы стрелять нажмите ЛКМ",
+                    new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+            }
+
+            else if (Scores >= 70 && Scores <= 150)
+            {
+                SpriteBatch.DrawString(mainFont, "Цель игры - не погибнуть от зомби и прожить как можно дольше",
+                    new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                SpriteBatch.DrawString(mainFont, "Удачи! GL HF",
+                    new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+            }
+        }
+
+        public void DrawBossInformation(SpriteFont mainFont)
+        {
+            if (Scores >= 1500 && Scores <= 1700)
+            {
+                SpriteBatch.DrawString(mainFont, "ВНИМАНИЕ! Появился босс! Босс бросается камнями.",
+                    new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                SpriteBatch.DrawString(mainFont, "Он часто промахивается, но если попадет, то вы потеряете очень много здоровья",
+                    new Vector2(650, 950), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+            }
+
+            if (Scores >= 1700 && Scores <= 2000)
+            {
+                SpriteBatch.DrawString(mainFont, "Ваша задача уничтожить босса, у него 1000 здоровья!",
+                    new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+            }
         }
     }
 }

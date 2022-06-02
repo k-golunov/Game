@@ -40,6 +40,7 @@ namespace GameUlearn
         private SoundEffectInstance menuSound;
         private bool musicStart = false;
         private TimeEvent timeEvent = new TimeEvent();
+        private TimeDraw timeDraw = new TimeDraw();
 
 
         private int OptionsCounter
@@ -188,10 +189,9 @@ namespace GameUlearn
                         deadSpeedZombies.Clear();
                     }
 
-
-
-                    if ((int)totalTime % 30000 == 0) // change on 15000
-                        heartBonuses.Add(new HeartBonus(heartImg));
+                    timeEvent.AddHeartBonus(heartBonuses, heartImg);
+/*                    if ((int)totalTime % 30000 == 0) // change on 15000
+                        heartBonuses.Add(new HeartBonus(heartImg));*/
 
                     for (var i = heartBonuses.Count - 1; i >= 0; i--)
                         if (heartBonuses[i].Intersets(player))
@@ -232,9 +232,7 @@ namespace GameUlearn
                             scores += 10000;
                             boss1.Alive = false;
                         }
-                            
-                    }
-                        
+                    }        
 
                     break;
 
@@ -309,23 +307,28 @@ namespace GameUlearn
             switch (gameState)
             {
                 case (GameState.Game):
+                    timeDraw.Scores = scores;
+                    timeDraw.SpriteBatch = _spriteBatch;
                     player.Draw(_spriteBatch);
+                    map.Draw(_spriteBatch);
+
                     foreach (var bullet in bullets)
                         bullet.Draw(_spriteBatch);
-                    map.Draw(_spriteBatch);
                     foreach (var zombie in zombies)
                         zombie.Draw(_spriteBatch);
                     foreach (var zombie in speedZombies)
                         zombie.Draw(_spriteBatch);
+
                     _spriteBatch.DrawString(mainFont, $"Очки: {scores}", new Vector2(20, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
 
                     if (scores >= 1500 && boss1.Alive)
                         boss1.Draw(_spriteBatch);
 
-                    if (scores >= 1500 && scores <= 1700)
+                    timeDraw.DrawBossInformation(mainFont);
+/*                    if (scores >= 1500 && scores <= 1700)
                     {
-                        _spriteBatch.DrawString(mainFont, "ВНИМАНИЕ! Появился босс! Босс бросается камнями.", 
-                            new Vector2(650,900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+                        _spriteBatch.DrawString(mainFont, "ВНИМАНИЕ! Появился босс! Босс бросается камнями.",
+                            new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                         _spriteBatch.DrawString(mainFont, "Он часто промахивается, но если попадет, то вы потеряете очень много здоровья",
                             new Vector2(650, 950), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                     }
@@ -334,12 +337,13 @@ namespace GameUlearn
                     {
                         _spriteBatch.DrawString(mainFont, "Ваша задача уничтожить босса, у него 1000 здоровья!",
                             new Vector2(650, 900), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
-                    }
+                    }*/
 
                     foreach (var heartBonus in heartBonuses)
                         heartBonus.Draw(_spriteBatch);
 
-                    if (scores <= 70)
+                    timeDraw.DrawTraining(mainFont);
+/*                    if (scores <= 70)
                     {
                         _spriteBatch.DrawString(mainFont, "Для перемещения используйте WASD",
                             new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
@@ -353,7 +357,7 @@ namespace GameUlearn
                             new Vector2(650, 1080 * 0.8f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
                         _spriteBatch.DrawString(mainFont, "Удачи! GL HF",
                             new Vector2(650, 1080 * 0.9f), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
-                    }
+                    }*/
 
 
                     break;
