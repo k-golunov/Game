@@ -12,33 +12,38 @@ namespace GameUlearn
     {
         public List<Bullet> bullets = new List<Bullet>();
         
-        private readonly float speed = 0.5f;
-        public Texture2D BulletImg;
+        private readonly float speed;
+        public Texture2D BulletImg { get; set; }
         public int Healthy = 1000;
         public Vector2 Position;
-        public float Rotation;
+        public float Rotation { get; set; }
         public Rectangle HitBox;
-        public Texture2D Image;
-        public SpriteFont HealthbarFont;
+        public Texture2D Image { get; set; }
+        public SpriteFont HealthbarFont { get; set; }
         public bool Alive = true;
+        public int Level { get; set; }
+        public int Damage { get; set; }
 
         public BossLevel1()
-        {
-            //BulletImg = bulletImg;            
+        {        
             Position.X = 250;
             Position.Y = 250;
+            speed = 1f;
+            Level = 0;
+            Damage = 20;
+        }
 
+        public void UpdateFields()
+        {
+            Level++;
+            Healthy = 1000 + 100 * Level;
+            Damage = 20 + 10 * Level;
         }
 
         public void SetSizeHitBox()
         {
             HitBox.Width = Image.Width * 2;
             HitBox.Height = Image.Height * 2;
-        }
-
-        public void SetPosition()
-        {
-
         }
 
         public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies)
@@ -49,9 +54,8 @@ namespace GameUlearn
                 bullets.Add(new Bullet(BulletImg, Rotation, Position));
 
             for (var i = bullets.Count - 1; i >= 0; i--)
-                if (bullets[i].IsNeedToDelete(zombies, player, map))
+                if (bullets[i].IsNeedToDelete(zombies, player, map, Damage))
                     bullets.RemoveAt(i);
-                
                     
             ChagneRotation(player);
         }
@@ -129,14 +133,11 @@ namespace GameUlearn
         {
             foreach (var bullet in bullets)
                 bullet.Draw(spriteBatch);
-            
 
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 2f, SpriteEffects.None, 1f);
             spriteBatch.DrawString(HealthbarFont, $"Босс: {Healthy} / 1000",
                             new Vector2(550, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
         }
-
-
     }
 }

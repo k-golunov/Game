@@ -15,11 +15,20 @@ namespace GameUlearn
         public Vector2 Position;
         public float Rotation { get; set; }
         public Rectangle Rectangle;
-        public int Healthy = 100;
+        public int Healthy { get; set; }
+        public int MaxHealthy { get; set; }
         public SpriteFont HealthbarFont { get; set; }
         public double TotalTime { get; set; }
-        public double prevTime { get; set; }
+        public double PrevTime { get; set; }
+        public int Damage { get; set; }
         public Keys LastKeyToMove = Keys.None;
+
+        public void UpdateFields(int bossLevel, int coef)
+        {
+            MaxHealthy += coef;
+            Healthy = MaxHealthy;
+            Damage += 10;
+        }
     }
 
     public class Player : Entity
@@ -31,6 +40,8 @@ namespace GameUlearn
         {
             Position = position;
             Speed = 5f;
+            Healthy = 100;
+            MaxHealthy = 100;
         }
 
         public void SetSizeHitBox()
@@ -38,11 +49,11 @@ namespace GameUlearn
             Rectangle = new Rectangle((int)Position.X, (int)Position.Y, Image.Width / 2, Image.Height / 2);
         }
 
-        public void Move(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1, int border, float position)
+/*        public void Move(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1, int border, float position)
         {
             SetHitBoxPosition();
             // подумать над логикой, как ее передавать в метод, чтобы все делать в одном методе
-        }
+        }*/
 
         public void Up(List<Zombie> zombies, BossLevel1 boss1, Map map)
         {
@@ -97,26 +108,10 @@ namespace GameUlearn
             spriteBatch.DrawString(HealthbarFont, $"Здоровье: {Healthy} / 100", new Vector2(10, 950), Color.Red);
         }
 
-        private bool Intersected(List<Zombie> zombies, BossLevel1 boss1, Map map)
-        {
-/*            foreach (var box in boxes)
-            {
-                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
-                    return true;
-
-                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 5)
-                    speed = 1f;
-                else if (rectangle.Intersects(box.GetRectangle()) && (box.NumberTexture == 1 || box.NumberTexture == 2 || box.NumberTexture == 3))
-                    speed = 10f;
-                else if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 0)
-                    speed = 5f;
-            }*/
-
-/*            if (boss1.HitBox.Intersects(rectangle))
-                return true;*/
-
-            return IntersetsWithZombie(zombies) || map.Intersets(Rectangle) || boss1.HitBox.Intersects(Rectangle);
-        }
+        private bool Intersected(List<Zombie> zombies, BossLevel1 boss1, Map map) => IntersetsWithZombie(zombies) 
+            || map.Intersets(Rectangle) 
+            || boss1.HitBox.Intersects(Rectangle);
+        
 
         private bool IntersetsWithZombie(List<Zombie> zombies)
         {
@@ -124,10 +119,10 @@ namespace GameUlearn
             {
                 if (Rectangle.Intersects(zombie.Rectangle))
                 {
-                    if (TotalTime - prevTime >= 2000)
+                    if (TotalTime - PrevTime <= 2000 && TotalTime - PrevTime >= 200)
                     {
-                        Damage();
-                        prevTime = TotalTime;
+                        Healthy -= zombie.Damage;
+                        PrevTime = TotalTime;
                     }
                         
                     return true;
@@ -146,13 +141,13 @@ namespace GameUlearn
             Rotation = (float)Math.Atan2((double)direction.Y, (double)direction.X);
         }
 
-        public void Damage()
+/*        public void Damage()
         {
                 Healthy -= 10;
-        }
+        }*/
     }
 
-    public class Zombie : Entity
+/*    public class Zombie : Entity
     {
         public float Speed { get; set; }
         private string LastMoveDirection = "none";
@@ -171,8 +166,8 @@ namespace GameUlearn
 
         public void Move(Player player, Map map)
         {
-/*            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;*/
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             SetHitBoxSize();
             FindWayToPlayer(player, map);
         }
@@ -223,8 +218,8 @@ namespace GameUlearn
             var rand = new Random();
             Position.X = rand.Next(0, 1920);
             Position.Y = rand.Next(0, 1080);
-/*            Rectangle.X = (int)Position.X;
-            Rectangle.Y = (int)Position.Y;*/
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
             SetHitBoxSize();
         }
 
@@ -282,7 +277,7 @@ namespace GameUlearn
             Rotation = 1f;
             Rectangle.Width = Image.Width;
             Rectangle.Height = Image.Height;
-            Speed = 6f;  
+            Speed = 6f;
         }
-    }
+    }*/
 }

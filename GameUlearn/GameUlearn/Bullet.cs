@@ -8,11 +8,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    public class Bullet
+    public class Bullet : IDraw
     {
         private readonly Texture2D Image;
         private readonly float Direction;
-        //private Vector2 Position;
         private Rectangle rectangle;
         private readonly float _speed = 20f;
 
@@ -23,12 +22,14 @@ namespace GameUlearn
             rectangle = new Rectangle((int)position.X, (int)position.Y, 10, 10);
         }
 
+
         public void Draw(SpriteBatch spriteBatch)
         {
             rectangle.X += (int)(_speed * (float)Math.Cos(Direction));
             rectangle.Y += (int)(_speed * (float)Math.Sin(Direction));
 
-            spriteBatch.Draw(Image, rectangle, null,Color.White, Direction, new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
+            spriteBatch.Draw(Image, rectangle, null,Color.White, Direction, 
+                new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
         }
 
         public bool IsNeedToDelete(List<Zombie> zombies, BossLevel1 boss1, Map map)
@@ -36,12 +37,12 @@ namespace GameUlearn
             return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(zombies, boss1, map);
         }
 
-        public bool IsNeedToDelete(List<Zombie> zombies, Player player, Map map)
+        public bool IsNeedToDelete(List<Zombie> zombies, Player player, Map map, int damage)
         {
-            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(zombies, player, map);
+            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(zombies, player, map, damage);
         }
 
-        private bool Intersected(List<Zombie> zombies, Player player, Map map)
+        private bool Intersected(List<Zombie> zombies, Player player, Map map, int damage)
         {
             foreach (var zombie in zombies)
             {
@@ -49,15 +50,9 @@ namespace GameUlearn
                     return true;
             }
 
-/*            foreach (var box in boxes)
-            {
-                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
-                    return true;
-            }*/
-
             if (rectangle.Intersects(player.Rectangle))
             {
-                player.Healthy -= 20;
+                player.Healthy -= damage;
                 return true;
             }
 
@@ -70,12 +65,6 @@ namespace GameUlearn
                 if (rectangle.Intersects(zombie.Rectangle))
                     return true;
             }
-
-/*            foreach (var box in boxes)
-            {
-                if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
-                    return true;
-            }*/
         
             if (rectangle.Intersects(boss1.HitBox))
                 return true;

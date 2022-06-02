@@ -61,7 +61,7 @@ namespace GameTest
             LoadContent();
             var zombies = new List<Zombie>
             {
-                new Zombie(simpleZombieImg)
+                new Zombie(simpleZombieImg, 0)
             };
             player.Right(zombies, boss1, map);
             Assert.AreEqual(player.Position.X, 5f);
@@ -91,7 +91,7 @@ namespace GameTest
             var bullets = new List<Bullet>();
             var zombies = new List<Zombie>
             {
-                new Zombie(simpleZombieImg)
+                new Zombie(simpleZombieImg, 0)
             };
             for (var i = 0; i < 10; i++)
                 bullets.Add(new Bullet(BulletImg, 10f, new Vector2(50, 50)));
@@ -124,7 +124,7 @@ namespace GameTest
             };
             var zombies = new List<Zombie>
             {
-                new Zombie(simpleZombieImg)
+                new Zombie(simpleZombieImg, 0)
             };
             zombies[0].Position.X = 100;
             zombies[0].Position.Y = 50;
@@ -145,14 +145,14 @@ namespace GameTest
 
         }
 
-        [TestMethod]
+/*        [TestMethod]
         public void TestDamageForPlayer()
         {
             _graphics.ApplyChanges();
             Initialize();
             player.Damage();
             Assert.AreEqual(player.Healthy, 90);
-        }
+        }*/
 
         [TestMethod]
         public void TestIntersets()
@@ -161,7 +161,7 @@ namespace GameTest
             Initialize();
             var zombies = new List<Zombie>
             {
-                new Zombie(simpleZombieImg)
+                new Zombie(simpleZombieImg, 0)
             };
             zombies[0].Position.X = 50;
             zombies[0].Position.Y = 50;

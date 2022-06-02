@@ -19,13 +19,13 @@ namespace GameUlearn
             return scores;
         }
 
-        public void SpawnZombie(List<Zombie> zombies, Texture2D simpleZombieImg, List<SpeedZombie> speedZombies, Texture2D speedZombieImg)
+        public void SpawnZombie(List<Zombie> zombies, Texture2D simpleZombieImg, List<SpeedZombie> speedZombies, Texture2D speedZombieImg, int bossLevel)
         {
             if (TotalTime % 5000 == 0 && TotalTime > 1000)
-                zombies.Add(new Zombie(simpleZombieImg));
+                zombies.Add(new Zombie(simpleZombieImg, bossLevel));
 
             if (TotalTime % 15000 == 0 && TotalTime > 1000)
-                speedZombies.Add(new SpeedZombie(speedZombieImg));
+                speedZombies.Add(new SpeedZombie(speedZombieImg, bossLevel));
         }
 
         public void RaiseSpeedForZombie(Zombie zombie)
