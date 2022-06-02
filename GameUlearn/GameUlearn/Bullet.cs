@@ -31,17 +31,17 @@ namespace GameUlearn
             spriteBatch.Draw(Image, rectangle, null,Color.White, Direction, new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
         }
 
-        public bool IsNeedToDelete(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
+        public bool IsNeedToDelete(List<Zombie> zombies, BossLevel1 boss1, Map map)
         {
-            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes, zombies, boss1);
+            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(zombies, boss1, map);
         }
 
-        public bool IsNeedToDelete(List<Box> boxes, List<Zombie> zombies, Player player)
+        public bool IsNeedToDelete(List<Zombie> zombies, Player player, Map map)
         {
-            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(boxes, zombies, player);
+            return rectangle.X > 1980 || rectangle.X < 0 || rectangle.Y > 1080 || rectangle.Y < 0 || Intersected(zombies, player, map);
         }
 
-        private bool Intersected(List<Box> boxes, List<Zombie> zombies, Player player)
+        private bool Intersected(List<Zombie> zombies, Player player, Map map)
         {
             foreach (var zombie in zombies)
             {
@@ -49,11 +49,11 @@ namespace GameUlearn
                     return true;
             }
 
-            foreach (var box in boxes)
+/*            foreach (var box in boxes)
             {
                 if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
                     return true;
-            }
+            }*/
 
             if (rectangle.Intersects(player.Rectangle))
             {
@@ -61,9 +61,9 @@ namespace GameUlearn
                 return true;
             }
 
-            return false;
+            return map.Intersets(rectangle);
         }
-        private bool Intersected(List<Box> boxes, List<Zombie> zombies, BossLevel1 boss1)
+        private bool Intersected(List<Zombie> zombies, BossLevel1 boss1, Map map)
         {
             foreach (var zombie in zombies)
             {
@@ -71,15 +71,15 @@ namespace GameUlearn
                     return true;
             }
 
-            foreach (var box in boxes)
+/*            foreach (var box in boxes)
             {
                 if (rectangle.Intersects(box.GetRectangle()) && box.NumberTexture == 4)
                     return true;
-            }
+            }*/
         
             if (rectangle.Intersects(boss1.HitBox))
                 return true;
-            return false;
+            return map.Intersets(rectangle);
             
         }
 

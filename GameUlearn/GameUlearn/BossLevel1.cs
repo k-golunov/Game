@@ -48,18 +48,10 @@ namespace GameUlearn
             if (totalGameTime % 2000 == 0)
                 bullets.Add(new Bullet(BulletImg, Rotation, Position));
 
-            //стрельба в игрока раз в 3 секунды, наносит 20 урона
-            // почему-то урон проходит только если босс не двигается (уже не так)
-/*            foreach (var bullet in bullets)
-                if (player.Rectangle.Intersects(bullet.GetRectangle()))
-                    player.Healthy -= 20;*/
-
-            // нужна другая проверка для босса, чтобы игроку наносился урон
             for (var i = bullets.Count - 1; i >= 0; i--)
-                if (bullets[i].IsNeedToDelete(map.boxes, zombies, player))
-                {
+                if (bullets[i].IsNeedToDelete(zombies, player, map))
                     bullets.RemoveAt(i);
-                }
+                
                     
             ChagneRotation(player);
         }
@@ -117,7 +109,7 @@ namespace GameUlearn
         {
             HitBox.X = (int)Position.X;
             HitBox.Y = (int)Position.Y;
-            if (HitBox.Intersects(player.Rectangle/*new Rectangle((int)player.Position.X, (int)player.Position.Y, player.Image.Width, player.Image.Height)*/) /*&& box.NumberTexture == 4*/)
+            if (HitBox.Intersects(player.Rectangle))
                 return true;
             return false;
         }

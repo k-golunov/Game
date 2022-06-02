@@ -137,17 +137,20 @@ namespace GameUlearn
                         musicStart = false;
                     }
                     player.TotalTime = totalTime;
+                    //player.SetHitBoxPosition();
                     if (keyboardState.IsKeyDown(Keys.A))
-                        player.Left(map.boxes, zombies, boss1);
+                        player.Left(zombies, boss1, map);
                     if (keyboardState.IsKeyDown(Keys.D))
-                        player.Right(map.boxes, zombies, boss1);
+                        player.Right(zombies, boss1, map);
                     if (keyboardState.IsKeyDown(Keys.W))
-                        player.Up(map.boxes, zombies, boss1);
+                        player.Up(zombies, boss1, map);
                     if (keyboardState.IsKeyDown(Keys.S))
-                        player.Down(map.boxes, zombies, boss1);
+                        player.Down(zombies, boss1, map);
                     if (mouse.LeftButton == ButtonState.Pressed && previousMouse.LeftButton != ButtonState.Pressed)
                         bullets.Add(new Bullet(BulletImg, player.Rotation, player.Position));
 
+                    map.ChangeSpeedOnBox(player);
+                    
                     if ((int)totalTime % 1000 == 0)
                         scores += 10;
 
@@ -160,7 +163,7 @@ namespace GameUlearn
                     foreach (var zombie in speedZombies)
                     {
                         zombie.ChagneRotation(player);
-                        zombie.Move(player, map.boxes);
+                        zombie.Move(player, map);
                         if (zombie.IntersetsWithBullet(bullets))
                             deadSpeedZombies.Add(zombie);
                     }
@@ -179,7 +182,7 @@ namespace GameUlearn
                         if ((int)totalTime % 2000 == 0)
                             zombie.RaiseSpeed();
                         zombie.ChagneRotation(player);
-                        zombie.Move(player, map.boxes);
+                        zombie.Move(player, map);
                         if (zombie.IntersetsWithBullet(bullets))
                             deadZombie.Add(zombie);
                     }
@@ -194,7 +197,7 @@ namespace GameUlearn
                     scores += deadZombie.Count * 50;
 
                     for (var i = bullets.Count - 1; i >= 0; i--)
-                        if (bullets[i].IsNeedToDelete(map.boxes, zombies, boss1))
+                        if (bullets[i].IsNeedToDelete(zombies, boss1, map))
                         {
                             if (boss1.IntersetsWithBullet(bullets))
                                 boss1.Healthy -= 10;
@@ -268,7 +271,6 @@ namespace GameUlearn
                     break;
 
                 case (GameState.Scores):
-                    // добавить словарь с временем и очками игрока, можно запариться и добавить введение ника игрока
                     if (musicStart == true)
                     {
                         menuSound.Stop(true);
@@ -307,8 +309,7 @@ namespace GameUlearn
                     player.Draw(_spriteBatch);
                     foreach (var bullet in bullets)
                         bullet.Draw(_spriteBatch);
-                    foreach (var box in map.boxes)
-                        box.Draw(_spriteBatch);
+                    map.Draw(_spriteBatch);
                     foreach (var zombie in zombies)
                         zombie.Draw(_spriteBatch);
                     foreach (var zombie in speedZombies)
