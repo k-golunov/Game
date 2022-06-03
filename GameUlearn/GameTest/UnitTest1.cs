@@ -49,7 +49,7 @@ namespace GameTest
 
         protected override void Initialize()
         {
-            player = new Player();
+            player = new Player(new Vector2(0,0));
             base.Initialize();
         }
 
@@ -145,14 +145,15 @@ namespace GameTest
 
         }
 
-/*        [TestMethod]
+        [TestMethod]
         public void TestDamageForPlayer()
         {
             _graphics.ApplyChanges();
             Initialize();
-            player.Damage();
+            player.Healthy = 100;
+            player.Healthy -= 10;
             Assert.AreEqual(player.Healthy, 90);
-        }*/
+        }
 
         [TestMethod]
         public void TestIntersets()
@@ -169,7 +170,7 @@ namespace GameTest
             player.Position.Y = 50.0f;
             player.Right(zombies, boss1, map);
             player.Right(zombies, boss1, map);
-            Assert.AreEqual(player.Position.X, 25.5f); // если бы не пересекся, позиция была бы 30ю5
+            Assert.AreEqual(player.Position.X, 25.5f);
         }
 
         [TestMethod]
@@ -216,9 +217,50 @@ namespace GameTest
                 boss1.Alive = false;
             Assert.AreEqual(boss1.Alive, false);
         }
+
+        [TestMethod]
+
+        public void TestRaiseSpeedZombie()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            var zombies = new List<Zombie>();
+            zombies.Add(new Zombie(simpleZombieImg, 1));
+            zombies[0].RaiseSpeed();
+            Assert.AreEqual(zombies[0].Speed, 0.51f);
+        }
+
+        [TestMethod]
+        public void TestChangeFieldsPlayer()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            player.UpdateFields(1, 50);
+            Assert.AreEqual(player.Damage, 20);
+            Assert.AreEqual(player.MaxHealthy, 150);
+            Assert.AreEqual(player.Healthy, 150);
+        }
+
+        [TestMethod]
+        public void TestChangeFieldZombie()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            var zombies = new List<Zombie>();
+            zombies.Add(new Zombie(simpleZombieImg, 2));
+            Assert.AreEqual(zombies[0].MaxHealthy, 20);
+            Assert.AreEqual(zombies[0].Healthy, 20);
+            Assert.AreEqual(zombies[0].Damage, 20);
+        }
+
+        [TestMethod]
+        public void TestChangeFieldBoss()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            boss1.UpdateFields();
+            Assert.AreEqual(boss1.Damage, 110);
+            Assert.AreEqual(boss1.Healthy, 1100);
+        }
     }
-
-    //тест на увеличение скорости зомби
-
-    //
 }

@@ -42,6 +42,7 @@ namespace GameUlearn
             Speed = 5f;
             Healthy = 100;
             MaxHealthy = 100;
+            Damage = 10;
         }
 
         public void SetSizeHitBox()
@@ -105,7 +106,7 @@ namespace GameUlearn
         {
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 1f, SpriteEffects.None, 1f);
-            spriteBatch.DrawString(HealthbarFont, $"Здоровье: {Healthy} / 100", new Vector2(10, 950), Color.Red);
+            spriteBatch.DrawString(HealthbarFont, $"Здоровье: {Healthy} / {MaxHealthy}", new Vector2(10, 950), Color.Red);
         }
 
         private bool Intersected(List<Zombie> zombies, BossLevel1 boss1, Map map) => IntersetsWithZombie(zombies) 

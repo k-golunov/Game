@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    class HeartBonus
+    class HeartBonus : IDraw
     {
         private Vector2 position;
         public Rectangle hitbox;
@@ -36,19 +36,17 @@ namespace GameUlearn
         {
             if (hitbox.Intersects(player.Rectangle))
             {
-                if (player.Healthy <= 70)
+                if (player.Healthy <= player.MaxHealthy - 30)
                     player.Healthy += 30;
                 else
-                    player.Healthy = 100;
+                    player.Healthy = player.MaxHealthy;
                 IsNeedToDelete = true;
                 return true;
             }
             return false;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(Image, hitbox, null, Color.White, 0f, new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
-        }
+        public void Draw(SpriteBatch spriteBatch) 
+            => spriteBatch.Draw(Image, hitbox, null, Color.White, 0f, new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
     }
 }

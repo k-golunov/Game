@@ -32,6 +32,12 @@
 /processorParam:TextureFormat=Color
 /build:boss.png
 
+#begin GameMusic.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:GameMusic.mp3
+
 #begin glass_vertical.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -14,7 +14,7 @@ namespace GameUlearn
         
         private readonly float speed;
         public Texture2D BulletImg { get; set; }
-        public int Healthy = 1000;
+        public int Healthy { get; set; }
         public Vector2 Position;
         public float Rotation { get; set; }
         public Rectangle HitBox;
@@ -23,6 +23,7 @@ namespace GameUlearn
         public bool Alive = true;
         public int Level { get; set; }
         public int Damage { get; set; }
+        public int MaxHealthy { get; set; }
 
         public BossLevel1()
         {        
@@ -31,19 +32,32 @@ namespace GameUlearn
             speed = 1f;
             Level = 0;
             Damage = 20;
+            Healthy = 1000;
+            MaxHealthy = Healthy;
         }
 
         public void UpdateFields()
         {
+            Position.X = 50;
+            Position.Y = 50;
             Level++;
             Healthy = 1000 + 100 * Level;
             Damage = 20 + 10 * Level;
+            MaxHealthy = Healthy;
         }
 
         public void SetSizeHitBox()
         {
             HitBox.Width = Image.Width * 2;
             HitBox.Height = Image.Height * 2;
+        }
+
+        public void HideHitBox()
+        {
+            HitBox.Width = 0;
+            HitBox.Height = 0;
+            HitBox.X = 0;
+            HitBox.Y = 0;
         }
 
         public void Update(int totalGameTime, Player player, Map map, List<Zombie> zombies)
@@ -136,7 +150,7 @@ namespace GameUlearn
 
             spriteBatch.Draw(Image, Position, null, Color.White,
                 Rotation, new Vector2(Image.Width / 2, Image.Height / 2), 2f, SpriteEffects.None, 1f);
-            spriteBatch.DrawString(HealthbarFont, $"Босс: {Healthy} / 1000",
+            spriteBatch.DrawString(HealthbarFont, $"Босс: {Healthy} / {MaxHealthy}",
                             new Vector2(550, 20), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
         }
     }

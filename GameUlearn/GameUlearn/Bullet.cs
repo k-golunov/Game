@@ -25,11 +25,15 @@ namespace GameUlearn
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            rectangle.X += (int)(_speed * (float)Math.Cos(Direction));
-            rectangle.Y += (int)(_speed * (float)Math.Sin(Direction));
-
+            UpdateHitBox();
             spriteBatch.Draw(Image, rectangle, null,Color.White, Direction, 
                 new Vector2(Image.Width / 2, Image.Height / 2), SpriteEffects.None, 1f);
+        }
+
+        public void UpdateHitBox()
+        {
+            rectangle.X += (int)(_speed * (float)Math.Cos(Direction));
+            rectangle.Y += (int)(_speed * (float)Math.Sin(Direction));
         }
 
         public bool IsNeedToDelete(List<Zombie> zombies, BossLevel1 boss1, Map map)

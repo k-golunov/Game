@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    public class Zombie : Entity
+    public class Zombie : Entity, IDraw
     {
         public float Speed { get; set; }
         private string LastMoveDirection = "none";
@@ -25,17 +25,16 @@ namespace GameUlearn
             Speed = 0.5f;
             Healthy = 10 + 5 * bossLevel;
             MaxHealthy = 10 + 5 * bossLevel;
+            Damage = 10 + 5 * bossLevel;
         }
 
-        public void Move(Player player, Map map)
+        public void Move(Player player, Map map, int scores)
         {
-            /*            Rectangle.X = (int)Position.X;
-                        Rectangle.Y = (int)Position.Y;*/
             SetHitBoxSize();
-            FindWayToPlayer(player, map);
+            FindWayToPlayer(player, map, scores);
         }
 
-        public void FindWayToPlayer(Player player, Map map)
+        public void FindWayToPlayer(Player player, Map map, int scores)
         {
             var a = Math.Abs(player.Position.X - Position.X);
             var b = Math.Abs(player.Position.Y - Position.Y);
@@ -43,7 +42,7 @@ namespace GameUlearn
             {
                 if (player.Position.X >= Position.X && player.Position.Y >= Position.Y)
                 {
-                    if (Intersected(player, map) && LastMoveDirection == "DownRight") return;
+                    if (Intersected(player, map, scores) && LastMoveDirection == "DownRight") return;
                     Position.X += Speed;
                     Position.Y += Speed;
                     LastMoveDirection = "DownRight";
@@ -51,7 +50,7 @@ namespace GameUlearn
 
                 else if (player.Position.X < Position.X && player.Position.Y < Position.Y)
                 {
-                    if (Intersected(player, map) && LastMoveDirection == "UpLeft") return;
+                    if (Intersected(player, map, scores) && LastMoveDirection == "UpLeft") return;
                     Position.X -= Speed;
                     Position.Y -= Speed;
                     LastMoveDirection = "UpLeft";
@@ -59,7 +58,7 @@ namespace GameUlearn
 
                 else if (player.Position.X < Position.X && player.Position.Y >= Position.Y)
                 {
-                    if (Intersected(player, map) && LastMoveDirection == "DownLeft") return;
+                    if (Intersected(player, map, scores) && LastMoveDirection == "DownLeft") return;
                     Position.X -= Speed;
                     Position.Y += Speed;
                     LastMoveDirection = "DownLeft";
@@ -67,7 +66,7 @@ namespace GameUlearn
 
                 else
                 {
-                    if (Intersected(player, map) && LastMoveDirection == "UpRight") return;
+                    if (Intersected(player, map, scores) && LastMoveDirection == "UpRight") return;
                     Position.X += Speed;
                     Position.Y -= Speed;
                     LastMoveDirection = "UpRight";
@@ -81,15 +80,21 @@ namespace GameUlearn
             var rand = new Random();
             Position.X = rand.Next(0, 1920);
             Position.Y = rand.Next(0, 1080);
-            /*            Rectangle.X = (int)Position.X;
-                        Rectangle.Y = (int)Position.Y;*/
             SetHitBoxSize();
         }
 
-        public bool Intersected(Player player, Map map)
+        public bool Intersected(Player player, Map map, int scores)
         {
             SetHitBoxSize();
-            return map.Intersets(Rectangle) || Rectangle.Intersects(player.Rectangle);
+            
+            if (Rectangle.Intersects(player.Rectangle) && TotalTime - PrevTime >= 2000/* && scores % 20 == 0*/)
+            {
+                player.Healthy -= Damage;
+                PrevTime = TotalTime;
+                return true;
+            }
+
+            return map.Intersets(Rectangle);
         }
 
         private void SetHitBoxSize()
@@ -130,7 +135,7 @@ namespace GameUlearn
         }
     }
 
-    public class SpeedZombie : Zombie
+    public class SpeedZombie : Zombie, IDraw
     {
         public SpeedZombie(Texture2D image, int bossLevel)
         {
@@ -142,6 +147,12 @@ namespace GameUlearn
             Speed = 5.5f;
             Healthy = 10 + 5 * bossLevel;
             MaxHealthy = 10 + 5 * bossLevel;
+        }
+    
+        public void UpdatePosition()
+        {
+            Rectangle.X = (int)Position.X;
+            Rectangle.Y = (int)Position.Y;
         }
     }
 }
