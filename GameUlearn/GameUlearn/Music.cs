@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GameUlearn
 {
-    class Music
+    public class Music
     {
         public SoundEffect Sound;
         public SoundEffectInstance Instance;

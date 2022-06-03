@@ -19,6 +19,8 @@ namespace GameTest
         private SpriteBatch _spriteBatch;
         private GraphicsDeviceManager _graphics;
         readonly BossLevel1 boss1 = new();
+        private Texture2D bonusImg;
+
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -31,6 +33,7 @@ namespace GameTest
             simpleZombieImg = Content.Load<Texture2D>("zoimbie1_hold");
             boss1.Image = Content.Load<Texture2D>("boss");
             boss1.BulletImg = Content.Load<Texture2D>("weapon_gun");
+            bonusImg = Content.Load<Texture2D>("heart2");
             boss1.SetSizeHitBox();
             map.GenerateMap();
         }
@@ -63,17 +66,12 @@ namespace GameTest
             {
                 new Zombie(simpleZombieImg, 0)
             };
-            player.Right(zombies, boss1, map);
-            Assert.AreEqual(player.Position.X, 5f);
-            Assert.AreEqual(player.Position.Y, 0);
-            player.Left(zombies, boss1, map);
-            Assert.AreEqual(player.Position.X, 5f); // игрок вообще не должен попадать на координаты 0 0, поэтому он не двигается
-            Assert.AreEqual(player.Position.Y, 0);
             player.Position.X = 100;
             player.Position.Y = 100;
             player.Down(zombies, boss1, map);
             Assert.AreEqual(player.Position.Y, 105f);
         }
+
 // для теста надо сделать публичную переменную с боксами
 /*        [TestMethod]
         public void TestGenerateMap()
@@ -84,7 +82,37 @@ namespace GameTest
         }*/
 
         [TestMethod]
-        public void TestShoot()
+        public void TestMovePlayerToWall()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            LoadContent();
+            var zombies = new List<Zombie>
+            {
+                new Zombie(simpleZombieImg, 0)
+            };
+            player.Left(zombies, boss1, map);
+            Assert.AreEqual(player.Position.X, 0f); 
+            Assert.AreEqual(player.Position.Y, 0f);
+        }
+
+        [TestMethod]
+        public void TestMoveToWalls()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            LoadContent();
+            var zombies = new List<Zombie>
+            {
+                new Zombie(simpleZombieImg, 0)
+            };
+            player.Right(zombies, boss1, map);
+            Assert.AreEqual(player.Position.X, 5f);
+            Assert.AreEqual(player.Position.Y, 0);
+        }
+
+        [TestMethod]
+        public void TestDeleteBullets()
         {
             _graphics.ApplyChanges();
             Initialize();
@@ -111,6 +139,17 @@ namespace GameTest
                 if (bullets[i].IsNeedToDelete(zombies, boss1, map))
                     bullets.RemoveAt(i);
             Assert.AreEqual(bullets.Count, 0);
+        }
+
+        [TestMethod]
+        public void TestShoot()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            var bullets = new List<Bullet>();
+            for (var i = 0; i < 10; i++)
+                bullets.Add(new Bullet(BulletImg, 10f, new Vector2(50, 50)));
+            Assert.AreEqual(bullets.Count, 10);
         }
 
         [TestMethod]
@@ -156,7 +195,7 @@ namespace GameTest
         }
 
         [TestMethod]
-        public void TestIntersets()
+        public void TestIntersetsForMovePlayerInZombie()
         {
             _graphics.ApplyChanges();
             Initialize();
@@ -259,8 +298,76 @@ namespace GameTest
             _graphics.ApplyChanges();
             Initialize();
             boss1.UpdateFields();
-            Assert.AreEqual(boss1.Damage, 110);
+            Assert.AreEqual(boss1.Damage, 30);
             Assert.AreEqual(boss1.Healthy, 1100);
+        }
+
+        [TestMethod]
+        public void TestMoveOnRoad()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            var zombies = new List<Zombie>();
+            zombies.Add(new Zombie(simpleZombieImg, 2));
+            player.Position.X = 200;
+            player.Position.Y = 100;
+            player.Right(zombies, boss1, map);
+            map.ChangeSpeedOnBox(player);
+            Assert.AreEqual(player.Speed, 10f);
+        }
+
+        [TestMethod]
+        public void TestMoveInSand()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            player.Position.X = 350;
+            player.Position.Y = 100;
+            var zombies = new List<Zombie>();
+            zombies.Add(new Zombie(simpleZombieImg, 2));
+            player.Right(zombies, boss1, map);
+            map.ChangeSpeedOnBox(player);
+            Assert.AreEqual(player.Speed, 1f);
+        }
+
+        [TestMethod]
+        public void TestHeartBonus()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            player.Position.X = 500;
+            player.Position.Y = 100;
+            player.SetSizeHitBox();
+            player.Healthy = 30;
+            var bonus = new HeartBonus(bonusImg);
+            bonus.hitbox.X = 510;
+            bonus.hitbox.Y = 100;
+            bonus.hitbox.Width = bonusImg.Width;
+            bonus.hitbox.Height = bonusImg.Height;
+            var a = bonus.Intersets(player);
+            Assert.AreEqual(a, true);
+            Assert.AreEqual(player.Healthy, 60);
+        }
+
+        [TestMethod]
+        public void TestHeartBonusWhenHPPreMax()
+        {
+            _graphics.ApplyChanges();
+            Initialize();
+            player.Position.X = 500;
+            player.Position.Y = 100;
+            player.SetSizeHitBox();
+            player.Healthy = 80;
+            var bonus = new HeartBonus(bonusImg);
+            bonus.hitbox.X = 510;
+            bonus.hitbox.Y = 100;
+            bonus.hitbox.Width = bonusImg.Width;
+            bonus.hitbox.Height = bonusImg.Height;
+            var a = bonus.Intersets(player);
+            Assert.AreEqual(a, true);
+            Assert.AreEqual(player.Healthy, 100);
+            bonus.Intersets(player);
+            Assert.AreEqual(player.Healthy, 100);
         }
     }
 }

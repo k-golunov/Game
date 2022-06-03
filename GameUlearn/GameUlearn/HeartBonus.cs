@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GameUlearn
 {
-    class HeartBonus : IDraw
+    public class HeartBonus : IDraw
     {
         private Vector2 position;
         public Rectangle hitbox;

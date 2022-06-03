@@ -247,12 +247,6 @@ namespace GameUlearn
                     break;
 
                 case (GameState.Menu):
-/*                    if (musicStart == false)
-                    {
-                        menuSound.Play();
-                        menuSound.Volume = 0.05f;
-                        musicStart = true;
-                    }*/
                     menuMusic.StartMusic();
                     gameMusic.StopMusic();
 
@@ -282,11 +276,6 @@ namespace GameUlearn
                     break;
 
                 case (GameState.Scores):
-/*                    if (musicStart == true)
-                    {
-                        menuSound.Stop(true);
-                        musicStart = false;
-                    }*/
                     menuMusic.StopMusic();
 
                     break;
@@ -391,8 +380,6 @@ namespace GameUlearn
             objs.Clear();
             boss1.Level = 0;
             boss1.Healthy = 1000;
-            // обнулять gametime
-            // в методе нужно обнулять все значения
         }
     }
 }
