@@ -159,7 +159,6 @@ namespace GameUlearn
                     map.ChangeSpeedOnBox(player);
                     timeEvent.SpawnZombie(zombies, simpleZombieImg, speedZombies, speedZombieImg, boss1.Level, objs);
 
-                    //Убрать дублирование
                     foreach (var zombie in speedZombies)
                     {
                         zombie.UpdatePosition();
@@ -178,7 +177,7 @@ namespace GameUlearn
                         if (zombie.IntersetsWithBullet(bullets))
                             deadZombie.Add(zombie);
                     }
-                    //до сюда
+
                     timeEvent.TotalTime = (int)totalTime;
                     scores = timeEvent.AddScore(scores, deadSpeedZombies.Count, deadZombie.Count);
                     if (deadSpeedZombies.Count != 0)
